@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -6,6 +6,19 @@ import interactionPlugin, { type DateClickArg } from '@fullcalendar/interaction'
 import type { EventClickArg, DateSelectArg } from '@fullcalendar/core';
 import type { Slot } from '../../types';
 import { getSlotStatus, SLOT_STATUS_COLOR } from '../../types';
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth < 640
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)');
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return isMobile;
+}
 
 interface GroupCalendarProps {
   slots: Slot[];
@@ -15,6 +28,7 @@ interface GroupCalendarProps {
 
 export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalendarProps) {
   const calendarRef = useRef<FullCalendar>(null);
+  const isMobile = useIsMobile();
 
   const events = useMemo(
     () =>
@@ -55,20 +69,33 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
     onSelectSlot(arg.event.extendedProps.slot as Slot);
   };
 
+  // Switch to a single-day view on small screens: a full week grid is too
+  // cramped to read or tap accurately on a phone.
+  useEffect(() => {
+    const api = calendarRef.current?.getApi();
+    if (!api) return;
+    api.changeView(isMobile ? 'timeGridDay' : 'timeGridWeek');
+  }, [isMobile]);
+
   return (
-    <div className="rounded-2xl border border-court-700 bg-court-900 p-3 sm:p-5">
+    <div className="rounded-2xl border border-court-700 bg-court-900 p-2.5 sm:p-5">
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        headerToolbar={{
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay',
-        }}
-        initialView="timeGridWeek"
+        headerToolbar={
+          isMobile
+            ? { left: 'prev,next', center: 'title', right: 'today' }
+            : { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' }
+        }
+        footerToolbar={
+          isMobile ? { left: '', center: 'dayGridMonth,timeGridDay', right: '' } : undefined
+        }
+        initialView={isMobile ? 'timeGridDay' : 'timeGridWeek'}
         locale="fr"
         firstDay={1}
         height="auto"
+        contentHeight="auto"
+        aspectRatio={isMobile ? 0.75 : 1.6}
         selectable
         selectMirror
         select={handleSelect}
@@ -77,9 +104,12 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
         events={events}
         slotMinTime="07:00:00"
         slotMaxTime="23:00:00"
+        slotDuration="00:30:00"
+        slotLabelInterval="01:00:00"
         allDaySlot={false}
         nowIndicator
         eventDisplay="block"
+        dayHeaderFormat={isMobile ? { weekday: 'long', day: 'numeric', month: 'short' } : undefined}
         buttonText={{ today: "aujourd'hui", month: 'mois', week: 'semaine', day: 'jour' }}
       />
     </div>
