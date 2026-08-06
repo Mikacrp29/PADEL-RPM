@@ -77,11 +77,18 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
     api.changeView(isMobile ? 'timeGridDay' : 'timeGridWeek');
   }, [isMobile]);
 
+  // Month view always uses short weekday labels ("lun", "mar"...) so the
+  // header never wraps onto two lines, on phone or desktop.
+  const monthViewOptions = { dayHeaderFormat: { weekday: 'short' as const } };
+
   return (
     <div className="rounded-2xl border border-court-700 bg-court-900 p-2.5 sm:p-5">
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        views={{
+          dayGridMonth: monthViewOptions,
+        }}
         headerToolbar={
           isMobile
             ? { left: 'prev,next', center: 'title', right: 'today' }
