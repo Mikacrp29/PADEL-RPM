@@ -1,0 +1,58 @@
+import type { Timestamp } from 'firebase/firestore';
+
+/** A private friend group. Stored at /groups/{groupId} */
+export interface Group {
+  id: string;
+  name: string;
+  inviteCode: string; // e.g. PADEL-7XQ9M, also used as document id for fast lookup
+  createdAt: Timestamp | null;
+  createdBy: string; // creator display name, optional
+  bookingUrl?: string; // configurable "Réserver le terrain" URL
+  memberCount: number; // distinct nicknames seen in the group (best-effort counter)
+}
+
+/** A single player entry on a slot. */
+export interface Participant {
+  name: string;
+  joinedAt: Timestamp | null;
+}
+
+/** A padel slot on the shared calendar. Stored at /groups/{groupId}/slots/{slotId} */
+export interface Slot {
+  id: string;
+  groupId: string;
+  start: Timestamp;
+  end: Timestamp;
+  createdBy: string;
+  createdAt: Timestamp | null;
+  participants: Participant[];
+}
+
+/** Local identity remembered per browser (no accounts). */
+export interface LocalIdentity {
+  nickname: string;
+  lastGroupCode: string | null;
+}
+
+export type SlotStatus = 'empty' | 'low' | 'mid' | 'ready';
+
+export function getSlotStatus(count: number): SlotStatus {
+  if (count <= 0) return 'empty';
+  if (count <= 2) return 'low';
+  if (count === 3) return 'mid';
+  return 'ready';
+}
+
+export const SLOT_STATUS_LABEL: Record<SlotStatus, string> = {
+  empty: 'Aucun joueur',
+  low: 'En attente de joueurs',
+  mid: 'Encore 1 joueur',
+  ready: 'Match possible',
+};
+
+export const SLOT_STATUS_COLOR: Record<SlotStatus, string> = {
+  empty: 'var(--color-slot-empty)',
+  low: 'var(--color-slot-low)',
+  mid: 'var(--color-slot-mid)',
+  ready: 'var(--color-slot-ready)',
+};
