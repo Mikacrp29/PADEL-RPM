@@ -98,11 +98,15 @@ export function GroupPage() {
     setNickname(nick);
   };
 
-  const handleLeave = async (slot: Slot, nick: string) => {
+ const handleLeave = async (slot: Slot, nick: string) => {
     const participant = slot.participants.find(
       (p) => p.name.toLowerCase() === nick.toLowerCase()
     );
     if (participant) await leaveSlot(group.id, slot.id, participant);
+  };
+
+  const handleDelete = async (slot: Slot) => {
+    await deleteSlot(group.id, slot.id);
   };
 
   return (
