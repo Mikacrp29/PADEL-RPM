@@ -25,7 +25,8 @@ export function Navbar({ group, nickname, onNicknameChange }: NavbarProps) {
   return (
     <header className="sticky top-0 z-30 border-b border-court-700 bg-court-950/90 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <Link to="/" className="shrink-0 font-display text-sm font-bold text-mist-100">
+        <Link to="/" className="flex shrink-0 items-center gap-2 font-display text-sm font-bold text-mist-100">
+          <img src="/logo.png" alt="" className="h-7 w-7 rounded-md" />
           Padel <span className="text-ball">Ensemble</span>
         </Link>
 
