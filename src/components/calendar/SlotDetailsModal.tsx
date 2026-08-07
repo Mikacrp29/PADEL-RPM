@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Trash2 } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
@@ -13,6 +14,7 @@ interface SlotDetailsModalProps {
   bookingUrl?: string;
   onJoin: (slot: Slot, nickname: string) => Promise<void>;
   onLeave: (slot: Slot, nickname: string) => Promise<void>;
+  onDelete: (slot: Slot) => Promise<void>;
 }
 
 export function SlotDetailsModal({
@@ -22,10 +24,12 @@ export function SlotDetailsModal({
   bookingUrl,
   onJoin,
   onLeave,
+  onDelete,
 }: SlotDetailsModalProps) {
   const [nickname, setNickname] = useState(defaultNickname);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   if (!slot) return null;
 
@@ -58,6 +62,18 @@ export function SlotDetailsModal({
     }
   };
 
+  const handleDelete = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await onDelete(slot);
+      onClose();
+    } catch {
+      setError('Impossible de supprimer ce créneau. Réessaie.');
+      setBusy(false);
+    }
+  };
+
   const dateLabel = slot.start.toDate().toLocaleDateString('fr-FR', {
     weekday: 'long',
     day: 'numeric',
@@ -78,6 +94,30 @@ export function SlotDetailsModal({
       <div className="mb-4">
         <StatusBadge count={slot.participants.length} />
       </div>
+
+      {slot.participants.length === 0 && (
+        <div className="mb-5">
+          {confirmingDelete ? (
+            <div className="flex items-center gap-2 rounded-xl border border-clay/40 bg-clay/10 p-3">
+              <p className="flex-1 text-sm text-mist-100">Supprimer ce créneau vide ?</p>
+              <Button size="sm" variant="ghost" onClick={() => setConfirmingDelete(false)}>
+                Annuler
+              </Button>
+              <Button size="sm" variant="danger" onClick={handleDelete} disabled={busy}>
+                {busy ? 'Suppression…' : 'Confirmer'}
+              </Button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setConfirmingDelete(true)}
+              className="flex items-center gap-1.5 text-sm text-mist-500 transition-colors hover:text-clay"
+            >
+              <Trash2 size={14} />
+              Supprimer ce créneau
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="mb-5 space-y-2">
         <p className="text-sm text-mist-300">Joueurs inscrits ({slot.participants.length}/4)</p>
@@ -101,7 +141,7 @@ export function SlotDetailsModal({
       </div>
 
       {status === 'ready' && bookingUrl && (
-        <a
+        
           href={bookingUrl}
           target="_blank"
           rel="noreferrer"
