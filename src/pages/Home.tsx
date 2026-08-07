@@ -14,6 +14,12 @@ export function Home() {
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6">
       <div className="court-lines pointer-events-none absolute inset-0" />
+      <img
+        src="/logo-watermark.png"
+        alt=""
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[140vh] w-[140vh] max-w-none -translate-x-1/2 -translate-y-1/2 select-none"
+      />
 
       <div className="relative z-10 w-full max-w-md text-center">
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-court-600 bg-court-800/60 px-3 py-1 text-xs font-medium text-mist-300">
