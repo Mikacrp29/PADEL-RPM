@@ -177,13 +177,14 @@ export function GroupPage() {
         onCreate={handleCreateSlot}
       />
 
-      <SlotDetailsModal
+     <SlotDetailsModal
         slot={selectedSlot}
         onClose={() => setSelectedSlot(null)}
         defaultNickname={nickname}
         bookingUrl={group.bookingUrl}
         onJoin={handleJoin}
         onLeave={handleLeave}
+        onDelete={handleDelete}
       />
     </div>
   );
