@@ -106,10 +106,16 @@ export function GroupPage() {
   };
 
   return (
-    <div className="min-h-screen pb-16">
+    <div className="relative min-h-screen pb-16">
+      <img
+        src="/logo-watermark.png"
+        alt=""
+        aria-hidden
+        className="pointer-events-none fixed left-1/2 top-1/2 h-[120vh] w-[120vh] max-w-none -translate-x-1/2 -translate-y-1/2 select-none"
+      />
       <Navbar group={group} nickname={nickname} onNicknameChange={setNickname} />
 
-      <main className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6">
+      <main className="relative mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6">
         <Dashboard slots={slots} memberCount={group.memberCount} />
 
         <div className="flex flex-wrap items-center gap-2">
