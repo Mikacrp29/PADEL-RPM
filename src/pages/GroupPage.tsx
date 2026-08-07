@@ -9,7 +9,7 @@ import { Dashboard } from '../components/layout/Dashboard';
 import { GroupCalendar } from '../components/calendar/GroupCalendar';
 import { CreateSlotModal } from '../components/calendar/CreateSlotModal';
 import { SlotDetailsModal } from '../components/calendar/SlotDetailsModal';
-import { createSlot, joinSlot, leaveSlot } from '../firebase/slots';
+import { createSlot, joinSlot, leaveSlot, deleteSlot } from '../firebase/slots';
 import { touchGroupMemberCount } from '../firebase/groups';
 import type { Slot } from '../types';
 import { getSlotStatus } from '../types';
