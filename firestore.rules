@@ -1,40 +1,27 @@
 rules_version = '2';
 
-// No accounts: access control is "possession of the invite code", the same
-// trust model as a shared Google Calendar link. Anyone who can read a group
-// document already knows its invite code (it IS the document id), so reads
-// are open; writes are restricted to the shape of data this app produces.
 service cloud.firestore {
   match /databases/{database}/documents {
 
     function isValidGroup(data) {
-      return data.name is string && data.name.size() > 0 && data.name.size() < 80
-        && data.inviteCode is string
-        && data.memberCount is int;
+      return data.name is string && data.name.size() > 0 && data.name.size() < 80 && data.inviteCode is string && data.memberCount is int;
     }
 
     function isValidSlot(data) {
-      return data.start is timestamp && data.end is timestamp
-        && data.end > data.start
-        && data.participants is list && data.participants.size() <= 4
-        && data.createdBy is string;
+      return data.start is timestamp && data.end is timestamp && data.end > data.start && data.participants is list && data.participants.size() <= 4 && data.createdBy is string;
     }
 
     match /groups/{groupId} {
-      allow read: true;
+      allow read: if true;
       allow create: if isValidGroup(request.resource.data);
-      // Only the mutable, non-identity fields can be updated after creation.
-      allow update: if request.resource.data.diff(resource.data).affectedKeys()
-        .hasOnly(['memberCount', 'bookingUrl']);
-     allow delete: if resource.data.participants.size() == 0;
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberCount', 'bookingUrl']);
+      allow delete: if false;
 
       match /slots/{slotId} {
-        allow read: true;
+        allow read: if true;
         allow create: if isValidSlot(request.resource.data);
-        allow update: if request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['participants'])
-          && request.resource.data.participants.size() <= 4;
-        allow delete: false;
+        allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) && request.resource.data.participants.size() <= 4;
+        allow delete: if resource.data.participants.size() == 0;
       }
     }
   }
