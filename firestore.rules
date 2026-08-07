@@ -26,7 +26,7 @@ service cloud.firestore {
       // Only the mutable, non-identity fields can be updated after creation.
       allow update: if request.resource.data.diff(resource.data).affectedKeys()
         .hasOnly(['memberCount', 'bookingUrl']);
-      allow delete: false;
+     allow delete: if resource.data.participants.size() == 0;
 
       match /slots/{slotId} {
         allow read: true;
