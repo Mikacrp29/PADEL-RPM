@@ -20,6 +20,14 @@ function useIsMobile() {
   return isMobile;
 }
 
+type ViewKey = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay';
+
+const VIEW_OPTIONS: { key: ViewKey; label: string }[] = [
+  { key: 'dayGridMonth', label: 'Mois' },
+  { key: 'timeGridWeek', label: 'Semaine' },
+  { key: 'timeGridDay', label: 'Jour' },
+];
+
 interface GroupCalendarProps {
   slots: Slot[];
   onSelectRange: (start: Date, end: Date) => void;
@@ -29,6 +37,7 @@ interface GroupCalendarProps {
 export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalendarProps) {
   const calendarRef = useRef<FullCalendar>(null);
   const isMobile = useIsMobile();
+  const [activeView, setActiveView] = useState<ViewKey>('dayGridMonth');
 
   const events = useMemo(
     () =>
@@ -69,13 +78,10 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
     onSelectSlot(arg.event.extendedProps.slot as Slot);
   };
 
-  // Switch to a single-day view on small screens: a full week grid is too
-  // cramped to read or tap accurately on a phone.
-  useEffect(() => {
-    const api = calendarRef.current?.getApi();
-    if (!api) return;
-    api.changeView(isMobile ? 'timeGridDay' : 'timeGridWeek');
-  }, [isMobile]);
+  const changeView = (view: ViewKey) => {
+    setActiveView(view);
+    calendarRef.current?.getApi().changeView(view);
+  };
 
   // Month view always uses short weekday labels ("lun", "mar"...) so the
   // header never wraps onto two lines, on phone or desktop.
@@ -83,26 +89,35 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
 
   return (
     <div className="rounded-2xl border border-court-700 bg-court-900 p-2.5 sm:p-5">
+      <div className="mb-3 flex justify-center gap-1 rounded-xl bg-court-800 p-1">
+        {VIEW_OPTIONS.map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => changeView(key)}
+            className={`flex-1 rounded-lg py-1.5 text-sm font-medium transition-colors ${
+              activeView === key
+                ? 'bg-ball text-court-950 font-semibold'
+                : 'text-mist-300 hover:text-mist-100'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         views={{
           dayGridMonth: monthViewOptions,
         }}
-        headerToolbar={
-          isMobile
-            ? { left: 'prev,next', center: 'title', right: 'today' }
-            : { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' }
-        }
-        footerToolbar={
-          isMobile ? { left: '', center: 'dayGridMonth,timeGridDay', right: '' } : undefined
-        }
-        initialView={isMobile ? 'timeGridDay' : 'timeGridWeek'}
+        headerToolbar={{ left: 'prev,next today', center: 'title', right: '' }}
+        initialView="dayGridMonth"
         locale="fr"
         firstDay={1}
         height="auto"
         contentHeight="auto"
-        aspectRatio={isMobile ? 0.75 : 1.6}
+        aspectRatio={isMobile ? 0.85 : 1.6}
         selectable
         selectMirror
         select={handleSelect}
@@ -116,8 +131,7 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
         allDaySlot={false}
         nowIndicator
         eventDisplay="block"
-        dayHeaderFormat={isMobile ? { weekday: 'long', day: 'numeric', month: 'short' } : undefined}
-        buttonText={{ today: "aujourd'hui", month: 'mois', week: 'semaine', day: 'jour' }}
+        buttonText={{ today: "aujourd'hui" }}
       />
     </div>
   );
