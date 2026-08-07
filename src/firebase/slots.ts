@@ -3,8 +3,10 @@ import {
   doc,
   addDoc,
   updateDoc,
+  deleteDoc,
   onSnapshot,
   query,
+  where,
   orderBy,
   serverTimestamp,
   Timestamp,
@@ -18,15 +20,27 @@ function slotsCol(groupId: string) {
   return collection(db, 'groups', groupId, 'slots');
 }
 
+const PAST_WINDOW_DAYS = 60;
+
 /**
- * Subscribes to every slot of a group in real time. Any create/join/leave
- * anywhere is reflected to every connected member within the callback.
+ * Subscribes to a group's slots in real time, limited to a sliding window
+ * (last 60 days onward). Without this, a group active for a year+ would
+ * download and listen to its entire history on every visit — slower to
+ * load and it eats into Firestore's daily read quota for no benefit, since
+ * nothing in the UI shows slots that old anyway.
  */
 export function subscribeToSlots(
   groupId: string,
   onChange: (slots: Slot[]) => void
 ): () => void {
-  const q = query(slotsCol(groupId), orderBy('start', 'asc'));
+  const windowStart = new Date();
+  windowStart.setDate(windowStart.getDate() - PAST_WINDOW_DAYS);
+
+  const q = query(
+    slotsCol(groupId),
+    where('start', '>=', Timestamp.fromDate(windowStart)),
+    orderBy('start', 'asc')
+  );
   return onSnapshot(q, (snapshot) => {
     const slots = snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Slot, 'id'>) }));
     onChange(slots);
@@ -75,4 +89,13 @@ export async function leaveSlot(
   await updateDoc(doc(db, 'groups', groupId, 'slots', slotId), {
     participants: arrayRemove(participant),
   });
+}
+
+/**
+ * Deletes a slot. Only allowed while it has zero participants — enforced
+ * both here (UI never offers the button otherwise) and in firestore.rules
+ * (so it can't be bypassed by calling the API directly).
+ */
+export async function deleteSlot(groupId: string, slotId: string): Promise<void> {
+  await deleteDoc(doc(db, 'groups', groupId, 'slots', slotId));
 }
