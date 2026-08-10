@@ -21,7 +21,8 @@ export function GroupPage() {
   const { code } = useParams();
   const navigate = useNavigate();
   const { group, loading, error, loadGroup } = useGroup();
-  const { nickname, setNickname, setLastGroupCode } = useLocalIdentity();
+ const { nickname, setNickname, setLastGroupCode } = useLocalIdentity();
+  const { addGroup } = useFavoriteGroups();
   const { slots } = useSlots(group?.id ?? null);
 
   const [range, setRange] = useState<{ start: Date; end: Date } | null>(null);
