@@ -4,7 +4,6 @@ import { Search } from 'lucide-react';
 import { useGroup } from '../contexts/GroupContext';
 import { useSlots } from '../hooks/useSlots';
 import { useLocalIdentity } from '../hooks/useLocalIdentity';
-import { useFavoriteGroups } from '../hooks/useFavoriteGroups';
 import { Navbar } from '../components/layout/Navbar';
 import { Dashboard } from '../components/layout/Dashboard';
 import { GroupCalendar } from '../components/calendar/GroupCalendar';
@@ -21,8 +20,7 @@ export function GroupPage() {
   const { code } = useParams();
   const navigate = useNavigate();
   const { group, loading, error, loadGroup } = useGroup();
- const { nickname, setNickname, setLastGroupCode } = useLocalIdentity();
-  const { addGroup } = useFavoriteGroups();
+const { nickname, setNickname, setLastGroupCode } = useLocalIdentity();
   const { slots } = useSlots(group?.id ?? null);
 
   const [range, setRange] = useState<{ start: Date; end: Date } | null>(null);
@@ -35,13 +33,12 @@ export function GroupPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
- useEffect(() => {
+useEffect(() => {
     if (group) {
       document.title = `${group.name} · Padel Ensemble`;
       setLastGroupCode(group.inviteCode);
-      addGroup(group.inviteCode, group.name);
     }
-  }, [group, setLastGroupCode, addGroup]);
+  }, [group, setLastGroupCode]);
 
   // Keep the selected slot's data fresh as real-time updates come in.
   useEffect(() => {
@@ -101,11 +98,18 @@ export function GroupPage() {
     setNickname(nick);
   };
 
- const handleLeave = async (slot: Slot, nick: string) => {
+  const handleLeave = async (slot: Slot, nick: string) => {
     const participant = slot.participants.find(
       (p) => p.name.toLowerCase() === nick.toLowerCase()
     );
-    if (participant) await leaveSlot(group.id, slot.id, participant);
+    if (!participant) return;
+    // If this was the only participant, remove the whole slot instead of
+    // leaving an empty, orphaned entry sitting on the calendar forever.
+    if (slot.participants.length === 1) {
+      await deleteSlot(group.id, slot.id);
+    } else {
+      await leaveSlot(group.id, slot.id, participant);
+    }
   };
 
   const handleDelete = async (slot: Slot) => {
