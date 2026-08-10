@@ -1,4 +1,3 @@
-```tsx
 import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { Modal } from '../ui/Modal';
@@ -81,15 +80,17 @@ export function SlotDetailsModal({
     month: 'long',
   });
 
-  const timeLabel = `${slot.start
-    .toDate()
-    .toLocaleTimeString('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    })} – ${slot.end.toDate().toLocaleTimeString('fr-FR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })}`;
+  const startTime = slot.start.toDate().toLocaleTimeString('fr-FR', {
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
+const endTime = slot.end.toDate().toLocaleTimeString('fr-FR', {
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
+const timeLabel = `${startTime} – ${endTime}`;
 
   return (
     <Modal open={!!slot} onClose={onClose} title={dateLabel}>
@@ -199,4 +200,3 @@ export function SlotDetailsModal({
     </Modal>
   );
 }
-```
