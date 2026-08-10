@@ -20,7 +20,7 @@ export function GroupPage() {
   const { code } = useParams();
   const navigate = useNavigate();
   const { group, loading, error, loadGroup } = useGroup();
-const { nickname, setNickname, setLastGroupCode } = useLocalIdentity();
+  const { nickname, setNickname, setLastGroupCode } = useLocalIdentity();
   const { slots } = useSlots(group?.id ?? null);
 
   const [range, setRange] = useState<{ start: Date; end: Date } | null>(null);
@@ -33,7 +33,7 @@ const { nickname, setNickname, setLastGroupCode } = useLocalIdentity();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
-useEffect(() => {
+  useEffect(() => {
     if (group) {
       document.title = `${group.name} · Padel Ensemble`;
       setLastGroupCode(group.inviteCode);
@@ -184,7 +184,7 @@ useEffect(() => {
         onCreate={handleCreateSlot}
       />
 
-     <SlotDetailsModal
+      <SlotDetailsModal
         slot={selectedSlot}
         onClose={() => setSelectedSlot(null)}
         defaultNickname={nickname}
