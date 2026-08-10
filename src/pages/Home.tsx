@@ -1,18 +1,20 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Users, X, ChevronDown } from 'lucide-react';
 import { Button } from '../components/ui/Button';
-import { useLocalIdentity } from '../hooks/useLocalIdentity';
+import { useFavoriteGroups } from '../hooks/useFavoriteGroups';
 
 export function Home() {
   const navigate = useNavigate();
-  const { lastGroupCode } = useLocalIdentity();
+  const { groups, removeGroup } = useFavoriteGroups();
+  const [showFavorites, setShowFavorites] = useState(false);
 
   useEffect(() => {
     document.title = 'Padel Ensemble';
   }, []);
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6">
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-16">
       <div className="court-lines pointer-events-none absolute inset-0" />
       <img
         src="/logo-watermark.png"
@@ -49,13 +51,48 @@ export function Home() {
           </Button>
         </div>
 
-        {lastGroupCode && (
-          <button
-            onClick={() => navigate(`/join/${lastGroupCode}`)}
-            className="mt-6 text-sm text-mist-500 underline decoration-dotted underline-offset-4 transition-colors hover:text-ball"
-          >
-            Retourner à mon dernier groupe ({lastGroupCode})
-          </button>
+        {groups.length > 0 && (
+          <div className="mt-8">
+            <button
+              onClick={() => setShowFavorites((v) => !v)}
+              className="mx-auto flex items-center gap-2 rounded-full border border-court-600 bg-court-800/60 px-4 py-2 text-sm font-medium text-mist-100 transition-colors hover:border-ball/50"
+            >
+              <Users size={16} className="text-ball" />
+              Mes groupes favoris ({groups.length})
+              <ChevronDown
+                size={16}
+                className={`text-mist-500 transition-transform ${showFavorites ? 'rotate-180' : ''}`}
+              />
+            </button>
+
+            {showFavorites && (
+              <ul className="mt-4 space-y-2 text-left animate-fade-up">
+                {groups.map((g) => (
+                  <li
+                    key={g.code}
+                    className="flex items-center gap-2 rounded-xl border border-court-600 bg-court-800 px-4 py-3"
+                  >
+                    <button
+                      onClick={() => navigate(`/g/${g.code}`)}
+                      className="flex min-w-0 flex-1 flex-col text-left"
+                    >
+                      <span className="truncate text-sm font-medium text-mist-100">
+                        {g.name}
+                      </span>
+                      <span className="font-mono text-xs text-mist-500">{g.code}</span>
+                    </button>
+                    <button
+                      onClick={() => removeGroup(g.code)}
+                      aria-label="Retirer des favoris"
+                      className="shrink-0 rounded-lg p-1.5 text-mist-500 transition-colors hover:bg-court-700 hover:text-clay"
+                    >
+                      <X size={16} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         )}
       </div>
     </div>
