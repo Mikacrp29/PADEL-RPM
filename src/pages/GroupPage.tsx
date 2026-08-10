@@ -35,12 +35,13 @@ export function GroupPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
-  useEffect(() => {
+ useEffect(() => {
     if (group) {
       document.title = `${group.name} · Padel Ensemble`;
       setLastGroupCode(group.inviteCode);
+      addGroup(group.inviteCode, group.name);
     }
-  }, [group, setLastGroupCode]);
+  }, [group, setLastGroupCode, addGroup]);
 
   // Keep the selected slot's data fresh as real-time updates come in.
   useEffect(() => {
