@@ -4,6 +4,7 @@ import { Search } from 'lucide-react';
 import { useGroup } from '../contexts/GroupContext';
 import { useSlots } from '../hooks/useSlots';
 import { useLocalIdentity } from '../hooks/useLocalIdentity';
+import { useFavoriteGroups } from '../hooks/useFavoriteGroups';
 import { Navbar } from '../components/layout/Navbar';
 import { Dashboard } from '../components/layout/Dashboard';
 import { GroupCalendar } from '../components/calendar/GroupCalendar';
