@@ -1,3 +1,4 @@
+```tsx
 import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { Modal } from '../ui/Modal';
@@ -36,6 +37,7 @@ export function SlotDetailsModal({
   const alreadyIn = slot.participants.some(
     (p) => p.name.toLowerCase() === nickname.trim().toLowerCase()
   );
+
   const status = getSlotStatus(slot.participants.length);
 
   const handleClick = async () => {
@@ -43,16 +45,14 @@ export function SlotDetailsModal({
       setError('Indique ton nom ou surnom.');
       return;
     }
+
     setBusy(true);
     setError(null);
+
     try {
       if (alreadyIn) {
         await onLeave(slot, nickname.trim());
       } else {
-        if (slot.participants.some((p) => p.name.toLowerCase() === nickname.trim().toLowerCase())) {
-          setError('Ce surnom est déjà inscrit sur ce créneau.');
-          return;
-        }
         await onJoin(slot, nickname.trim());
       }
     } catch {
@@ -65,6 +65,7 @@ export function SlotDetailsModal({
   const handleDelete = async () => {
     setBusy(true);
     setError(null);
+
     try {
       await onDelete(slot);
       onClose();
@@ -79,19 +80,21 @@ export function SlotDetailsModal({
     day: 'numeric',
     month: 'long',
   });
-  const timeLabel = `${slot.start.toDate().toLocaleTimeString('fr-FR', {
+
+  const timeLabel = `${slot.start
+    .toDate()
+    .toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    })} – ${slot.end.toDate().toLocaleTimeString('fr-FR', {
     hour: '2-digit',
     minute: '2-digit',
-  })} – ${slot.end.toDate().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+  })}`;
 
   return (
-    <Modal open={!!slot} onClose={onClose} title="Détails du créneau">
-      <div className="mb-4 space-y-1">
-        <p className="capitalize text-mist-100">{dateLabel}</p>
-        <p className="font-mono text-sm text-mist-300">{timeLabel}</p>
-      </div>
-
+    <Modal open={!!slot} onClose={onClose} title={dateLabel}>
       <div className="mb-4">
+        <p className="mb-3 text-sm text-mist-300">{timeLabel}</p>
         <StatusBadge count={slot.participants.length} />
       </div>
 
@@ -99,11 +102,24 @@ export function SlotDetailsModal({
         <div className="mb-5">
           {confirmingDelete ? (
             <div className="flex items-center gap-2 rounded-xl border border-clay/40 bg-clay/10 p-3">
-              <p className="flex-1 text-sm text-mist-100">Supprimer ce créneau vide ?</p>
-              <Button size="sm" variant="ghost" onClick={() => setConfirmingDelete(false)}>
+              <p className="flex-1 text-sm text-mist-100">
+                Supprimer ce créneau vide ?
+              </p>
+
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setConfirmingDelete(false)}
+              >
                 Annuler
               </Button>
-              <Button size="sm" variant="danger" onClick={handleDelete} disabled={busy}>
+
+              <Button
+                size="sm"
+                variant="danger"
+                onClick={handleDelete}
+                disabled={busy}
+              >
                 {busy ? 'Suppression…' : 'Confirmer'}
               </Button>
             </div>
@@ -120,9 +136,14 @@ export function SlotDetailsModal({
       )}
 
       <div className="mb-5 space-y-2">
-        <p className="text-sm text-mist-300">Joueurs inscrits ({slot.participants.length}/4)</p>
+        <p className="text-sm text-mist-300">
+          Joueurs inscrits ({slot.participants.length}/4)
+        </p>
+
         {slot.participants.length === 0 ? (
-          <p className="text-sm text-mist-500">Personne pour l'instant.</p>
+          <p className="text-sm text-mist-500">
+            Personne pour l'instant.
+          </p>
         ) : (
           <ul className="space-y-1.5">
             {slot.participants.map((p) => (
@@ -133,6 +154,7 @@ export function SlotDetailsModal({
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-ball/20 text-xs font-semibold text-ball">
                   {p.name.charAt(0).toUpperCase()}
                 </span>
+
                 {p.name}
               </li>
             ))}
@@ -141,11 +163,11 @@ export function SlotDetailsModal({
       </div>
 
       {status === 'ready' && bookingUrl && (
-        
+        <a
           href={bookingUrl}
           target="_blank"
           rel="noreferrer"
-          className="mb-4 block rounded-xl bg-slot-ready/15 border border-slot-ready/40 px-4 py-3 text-center text-sm font-semibold text-mist-100 transition-colors hover:bg-slot-ready/25"
+          className="mb-4 block rounded-xl border border-slot-ready/40 bg-slot-ready/15 px-4 py-3 text-center text-sm font-semibold text-mist-100 transition-colors hover:bg-slot-ready/25"
         >
           🎾 Réserver le terrain
         </a>
@@ -157,7 +179,9 @@ export function SlotDetailsModal({
           onChange={(e) => setNickname(e.target.value)}
           placeholder="Ton nom ou surnom"
         />
+
         {error && <p className="text-sm text-clay">{error}</p>}
+
         <Button
           className="w-full"
           size="lg"
@@ -165,9 +189,14 @@ export function SlotDetailsModal({
           onClick={handleClick}
           disabled={busy}
         >
-          {busy ? 'Un instant…' : alreadyIn ? '❌ Je ne suis plus disponible' : '➕ Je participe'}
+          {busy
+            ? 'Un instant…'
+            : alreadyIn
+              ? '❌ Je ne suis plus disponible'
+              : '➕ Je participe'}
         </Button>
       </div>
     </Modal>
   );
 }
+```
