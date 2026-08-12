@@ -11,10 +11,17 @@ export interface Group {
   memberCount: number; // distinct nicknames seen in the group (best-effort counter)
 }
 
-/** A single player entry on a slot. */
+/**
+ * A single player entry on a slot.
+ * `club` is a free-text suggestion for now (typed manually). It's kept as
+ * plain text so a future "partner clubs" dropdown can populate the exact
+ * same field without any data migration — the dropdown would just replace
+ * the input, not the storage shape.
+ */
 export interface Participant {
   name: string;
   joinedAt: Timestamp | null;
+  club?: string;
 }
 
 /** A padel slot on the shared calendar. Stored at /groups/{groupId}/slots/{slotId} */
