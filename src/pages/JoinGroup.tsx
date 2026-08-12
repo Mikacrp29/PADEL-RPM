@@ -6,12 +6,14 @@ import { Input } from '../components/ui/Input';
 import { useGroup } from '../contexts/GroupContext';
 import { useLocalIdentity } from '../hooks/useLocalIdentity';
 
+const CODE_PREFIX = 'PADEL-';
+
 export function JoinGroup() {
   const navigate = useNavigate();
   const { code: codeFromUrl } = useParams();
   const { loadGroup, loading, error } = useGroup();
   const { setLastGroupCode } = useLocalIdentity();
-  const [code, setCode] = useState(codeFromUrl ?? '');
+  const [code, setCode] = useState(codeFromUrl ?? CODE_PREFIX);
 
   const handleJoin = async (value: string) => {
     const group = await loadGroup(value);
@@ -25,6 +27,16 @@ export function JoinGroup() {
     if (codeFromUrl) handleJoin(codeFromUrl);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [codeFromUrl]);
+
+  // Keeps "PADEL-" as a locked prefix: typing or pasting only ever edits the
+  // part after it, and it's impossible to end up with a code missing it —
+  // whether the person types the suffix directly or pastes a full code
+  // (with or without the prefix, any case).
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.toUpperCase();
+    const suffix = raw.startsWith(CODE_PREFIX) ? raw.slice(CODE_PREFIX.length) : raw;
+    setCode(CODE_PREFIX + suffix.replace(/[^A-Z0-9-]/g, ''));
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6">
@@ -44,7 +56,7 @@ export function JoinGroup() {
         <div className="space-y-4">
           <Input
             value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            onChange={handleChange}
             placeholder="PADEL-XXXXX"
             className="font-mono"
             autoFocus
@@ -54,7 +66,7 @@ export function JoinGroup() {
             size="lg"
             className="w-full"
             onClick={() => handleJoin(code)}
-            disabled={loading || !code.trim()}
+            disabled={loading || code === CODE_PREFIX}
           >
             {loading ? 'Recherche…' : 'Rejoindre'}
           </Button>
