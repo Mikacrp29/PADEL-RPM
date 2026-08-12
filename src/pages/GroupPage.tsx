@@ -87,14 +87,14 @@ export function GroupPage() {
     );
   }
 
-  const handleCreateSlot = async (nick: string, start: Date, end: Date) => {
-    await createSlot(group.id, start, end, nick);
+ const handleCreateSlot = async (nick: string, start: Date, end: Date, club: string) => {
+    await createSlot(group.id, start, end, nick, club);
     if (nick.trim() && nick.trim() !== nickname) setNickname(nick.trim());
     await touchGroupMemberCount(group.id).catch(() => {});
   };
 
-  const handleJoin = async (slot: Slot, nick: string) => {
-    await joinSlot(group.id, slot.id, nick);
+  const handleJoin = async (slot: Slot, nick: string, club: string) => {
+    await joinSlot(group.id, slot.id, nick, club);
     setNickname(nick);
   };
 
