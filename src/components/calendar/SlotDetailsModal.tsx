@@ -151,7 +151,7 @@ export function SlotDetailsModal({
       </div>
 
       {status === 'ready' && bookingUrl && (
-        
+        <a
           href={bookingUrl}
           target="_blank"
           rel="noreferrer"
