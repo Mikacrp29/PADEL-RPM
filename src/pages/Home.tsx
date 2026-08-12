@@ -1,13 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { Users, X, ChevronDown } from 'lucide-react';
+import { useEffect } from 'react';
+import { X } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { useFavoriteGroups } from '../hooks/useFavoriteGroups';
 
 export function Home() {
   const navigate = useNavigate();
   const { groups, removeGroup } = useFavoriteGroups();
-  const [showFavorites, setShowFavorites] = useState(false);
 
   useEffect(() => {
     document.title = 'Padel Ensemble';
@@ -51,22 +50,15 @@ export function Home() {
           </Button>
         </div>
 
-        {groups.length > 0 && (
-          <div className="mt-8">
-            <button
-              onClick={() => setShowFavorites((v) => !v)}
-              className="mx-auto flex items-center gap-2 rounded-full border border-court-600 bg-court-800/60 px-4 py-2 text-sm font-medium text-mist-100 transition-colors hover:border-ball/50"
-            >
-              <Users size={16} className="text-ball" />
-              Mes groupes favoris ({groups.length})
-              <ChevronDown
-                size={16}
-                className={`text-mist-500 transition-transform ${showFavorites ? 'rotate-180' : ''}`}
-              />
-            </button>
-
-            {showFavorites && (
-              <ul className="mt-4 space-y-2 text-left animate-fade-up">
+        <div className="mt-10 text-left">
+          {groups.length === 0 ? (
+            <p className="text-center text-sm text-mist-500">⭐ Aucun groupe favori</p>
+          ) : (
+            <>
+              <p className="mb-3 text-center text-sm font-medium text-mist-300">
+                ⭐ Mes groupes
+              </p>
+              <ul className="space-y-2 animate-fade-up">
                 {groups.map((g) => (
                   <li
                     key={g.code}
@@ -74,12 +66,15 @@ export function Home() {
                   >
                     <button
                       onClick={() => navigate(`/g/${g.code}`)}
-                      className="flex min-w-0 flex-1 flex-col text-left"
+                      className="flex min-w-0 flex-1 items-center gap-2 text-left"
                     >
-                      <span className="truncate text-sm font-medium text-mist-100">
-                        {g.name}
+                      <span className="shrink-0 text-ball">⭐</span>
+                      <span className="flex min-w-0 flex-col">
+                        <span className="truncate text-sm font-medium text-mist-100">
+                          {g.name}
+                        </span>
+                        <span className="font-mono text-xs text-mist-500">{g.code}</span>
                       </span>
-                      <span className="font-mono text-xs text-mist-500">{g.code}</span>
                     </button>
                     <button
                       onClick={() => removeGroup(g.code)}
@@ -91,9 +86,9 @@ export function Home() {
                   </li>
                 ))}
               </ul>
-            )}
-          </div>
-        )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
