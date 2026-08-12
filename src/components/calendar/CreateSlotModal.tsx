@@ -8,7 +8,7 @@ interface CreateSlotModalProps {
   onClose: () => void;
   range: { start: Date; end: Date } | null;
   defaultNickname: string;
-  onCreate: (nickname: string, start: Date, end: Date) => Promise<void>;
+  onCreate: (nickname: string, start: Date, end: Date, club: string) => Promise<void>;
 }
 
 function toTimeInput(d: Date) {
@@ -23,6 +23,7 @@ export function CreateSlotModal({
   onCreate,
 }: CreateSlotModalProps) {
   const [nickname, setNickname] = useState(defaultNickname);
+  const [club, setClub] = useState('');
   const [startTime, setStartTime] = useState('19:00');
   const [endTime, setEndTime] = useState('20:30');
   const [submitting, setSubmitting] = useState(false);
@@ -34,6 +35,7 @@ export function CreateSlotModal({
       setEndTime(toTimeInput(range.end));
     }
     setNickname(defaultNickname);
+    setClub('');
     setError(null);
   }, [range, defaultNickname, open]);
 
@@ -59,7 +61,7 @@ export function CreateSlotModal({
     setSubmitting(true);
     setError(null);
     try {
-      await onCreate(nickname.trim(), start, end);
+      await onCreate(nickname.trim(), start, end, club.trim());
       onClose();
     } catch {
       setError('Impossible de créer le créneau. Réessaie.');
@@ -98,6 +100,17 @@ export function CreateSlotModal({
             <label className="mb-1.5 block text-sm text-mist-300">Heure de fin</label>
             <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
           </div>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm text-mist-300">
+            Club proposé <span className="text-mist-500">(optionnel)</span>
+          </label>
+          <Input
+            value={club}
+            onChange={(e) => setClub(e.target.value)}
+            placeholder="Ex. Padel Club Anderlecht"
+          />
         </div>
 
         {error && <p className="text-sm text-clay">{error}</p>}
