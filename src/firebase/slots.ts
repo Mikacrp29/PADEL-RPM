@@ -51,12 +51,16 @@ export async function createSlot(
   groupId: string,
   start: Date,
   end: Date,
-  creatorName: string
+  creatorName: string,
+  club?: string
 ): Promise<string> {
   const firstParticipant: Participant = {
     name: creatorName.trim(),
     joinedAt: Timestamp.now(),
   };
+  if (club && club.trim()) {
+    firstParticipant.club = club.trim();
+  }
   const ref = await addDoc(slotsCol(groupId), {
     groupId,
     start: Timestamp.fromDate(start),
@@ -68,9 +72,22 @@ export async function createSlot(
   return ref.id;
 }
 
-/** Adds a nickname to a slot's participant list (no-op if already present, enforced by caller). */
-export async function joinSlot(groupId: string, slotId: string, nickname: string): Promise<void> {
+/**
+ * Adds a nickname to a slot's participant list (no-op if already present,
+ * enforced by caller). `club` is an optional free-text suggestion; Firestore
+ * rejects `undefined` field values, so the key is only included when a
+ * non-empty club was actually provided.
+ */
+export async function joinSlot(
+  groupId: string,
+  slotId: string,
+  nickname: string,
+  club?: string
+): Promise<void> {
   const participant: Participant = { name: nickname.trim(), joinedAt: Timestamp.now() };
+  if (club && club.trim()) {
+    participant.club = club.trim();
+  }
   await updateDoc(doc(db, 'groups', groupId, 'slots', slotId), {
     participants: arrayUnion(participant),
   });
