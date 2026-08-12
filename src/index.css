@@ -144,3 +144,11 @@ body {
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--color-court-600); border-radius: 4px; }
+
+/* Reserves the notch / Dynamic Island / status bar area on iOS when the app
+   is installed to the home screen (standalone display mode), so the top
+   navbar's buttons sit below it instead of partly underneath it. Harmless
+   on devices without a notch — env() resolves to 0 there. */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
