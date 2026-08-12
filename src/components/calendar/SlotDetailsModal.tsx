@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, MapPin } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
@@ -12,7 +12,7 @@ interface SlotDetailsModalProps {
   onClose: () => void;
   defaultNickname: string;
   bookingUrl?: string;
-  onJoin: (slot: Slot, nickname: string) => Promise<void>;
+  onJoin: (slot: Slot, nickname: string, club: string) => Promise<void>;
   onLeave: (slot: Slot, nickname: string) => Promise<void>;
   onDelete: (slot: Slot) => Promise<void>;
 }
@@ -27,6 +27,7 @@ export function SlotDetailsModal({
   onDelete,
 }: SlotDetailsModalProps) {
   const [nickname, setNickname] = useState(defaultNickname);
+  const [club, setClub] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
@@ -36,7 +37,6 @@ export function SlotDetailsModal({
   const alreadyIn = slot.participants.some(
     (p) => p.name.toLowerCase() === nickname.trim().toLowerCase()
   );
-
   const status = getSlotStatus(slot.participants.length);
 
   const handleClick = async () => {
@@ -44,15 +44,18 @@ export function SlotDetailsModal({
       setError('Indique ton nom ou surnom.');
       return;
     }
-
     setBusy(true);
     setError(null);
-
     try {
       if (alreadyIn) {
         await onLeave(slot, nickname.trim());
       } else {
-        await onJoin(slot, nickname.trim());
+        if (slot.participants.some((p) => p.name.toLowerCase() === nickname.trim().toLowerCase())) {
+          setError('Ce surnom est déjà inscrit sur ce créneau.');
+          return;
+        }
+        await onJoin(slot, nickname.trim(), club.trim());
+        setClub('');
       }
     } catch {
       setError('Une erreur est survenue. Réessaie.');
@@ -64,7 +67,6 @@ export function SlotDetailsModal({
   const handleDelete = async () => {
     setBusy(true);
     setError(null);
-
     try {
       await onDelete(slot);
       onClose();
@@ -79,23 +81,19 @@ export function SlotDetailsModal({
     day: 'numeric',
     month: 'long',
   });
-
-  const startTime = slot.start.toDate().toLocaleTimeString('fr-FR', {
-  hour: '2-digit',
-  minute: '2-digit',
-});
-
-const endTime = slot.end.toDate().toLocaleTimeString('fr-FR', {
-  hour: '2-digit',
-  minute: '2-digit',
-});
-
-const timeLabel = `${startTime} – ${endTime}`;
+  const timeLabel = `${slot.start.toDate().toLocaleTimeString('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })} – ${slot.end.toDate().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
 
   return (
-    <Modal open={!!slot} onClose={onClose} title={dateLabel}>
+    <Modal open={!!slot} onClose={onClose} title="Détails du créneau">
+      <div className="mb-4 space-y-1">
+        <p className="capitalize text-mist-100">{dateLabel}</p>
+        <p className="font-mono text-sm text-mist-300">{timeLabel}</p>
+      </div>
+
       <div className="mb-4">
-        <p className="mb-3 text-sm text-mist-300">{timeLabel}</p>
         <StatusBadge count={slot.participants.length} />
       </div>
 
@@ -103,24 +101,11 @@ const timeLabel = `${startTime} – ${endTime}`;
         <div className="mb-5">
           {confirmingDelete ? (
             <div className="flex items-center gap-2 rounded-xl border border-clay/40 bg-clay/10 p-3">
-              <p className="flex-1 text-sm text-mist-100">
-                Supprimer ce créneau vide ?
-              </p>
-
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setConfirmingDelete(false)}
-              >
+              <p className="flex-1 text-sm text-mist-100">Supprimer ce créneau vide ?</p>
+              <Button size="sm" variant="ghost" onClick={() => setConfirmingDelete(false)}>
                 Annuler
               </Button>
-
-              <Button
-                size="sm"
-                variant="danger"
-                onClick={handleDelete}
-                disabled={busy}
-              >
+              <Button size="sm" variant="danger" onClick={handleDelete} disabled={busy}>
                 {busy ? 'Suppression…' : 'Confirmer'}
               </Button>
             </div>
@@ -137,14 +122,9 @@ const timeLabel = `${startTime} – ${endTime}`;
       )}
 
       <div className="mb-5 space-y-2">
-        <p className="text-sm text-mist-300">
-          Joueurs inscrits ({slot.participants.length}/4)
-        </p>
-
+        <p className="text-sm text-mist-300">Joueurs inscrits ({slot.participants.length}/4)</p>
         {slot.participants.length === 0 ? (
-          <p className="text-sm text-mist-500">
-            Personne pour l'instant.
-          </p>
+          <p className="text-sm text-mist-500">Personne pour l'instant.</p>
         ) : (
           <ul className="space-y-1.5">
             {slot.participants.map((p) => (
@@ -152,11 +132,18 @@ const timeLabel = `${startTime} – ${endTime}`;
                 key={p.name}
                 className="flex items-center gap-2 rounded-lg bg-court-800 px-3 py-2 text-sm text-mist-100"
               >
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-ball/20 text-xs font-semibold text-ball">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ball/20 text-xs font-semibold text-ball">
                   {p.name.charAt(0).toUpperCase()}
                 </span>
-
-                {p.name}
+                <span className="flex min-w-0 flex-col">
+                  <span>{p.name}</span>
+                  {p.club && (
+                    <span className="flex items-center gap-1 text-xs text-mist-500">
+                      <MapPin size={11} className="shrink-0" />
+                      <span className="truncate">{p.club}</span>
+                    </span>
+                  )}
+                </span>
               </li>
             ))}
           </ul>
@@ -164,11 +151,11 @@ const timeLabel = `${startTime} – ${endTime}`;
       </div>
 
       {status === 'ready' && bookingUrl && (
-        <a
+        
           href={bookingUrl}
           target="_blank"
           rel="noreferrer"
-          className="mb-4 block rounded-xl border border-slot-ready/40 bg-slot-ready/15 px-4 py-3 text-center text-sm font-semibold text-mist-100 transition-colors hover:bg-slot-ready/25"
+          className="mb-4 block rounded-xl bg-slot-ready/15 border border-slot-ready/40 px-4 py-3 text-center text-sm font-semibold text-mist-100 transition-colors hover:bg-slot-ready/25"
         >
           🎾 Réserver le terrain
         </a>
@@ -180,9 +167,14 @@ const timeLabel = `${startTime} – ${endTime}`;
           onChange={(e) => setNickname(e.target.value)}
           placeholder="Ton nom ou surnom"
         />
-
+        {!alreadyIn && (
+          <Input
+            value={club}
+            onChange={(e) => setClub(e.target.value)}
+            placeholder="Club proposé (optionnel)"
+          />
+        )}
         {error && <p className="text-sm text-clay">{error}</p>}
-
         <Button
           className="w-full"
           size="lg"
@@ -190,11 +182,7 @@ const timeLabel = `${startTime} – ${endTime}`;
           onClick={handleClick}
           disabled={busy}
         >
-          {busy
-            ? 'Un instant…'
-            : alreadyIn
-              ? '❌ Je ne suis plus disponible'
-              : '➕ Je participe'}
+          {busy ? 'Un instant…' : alreadyIn ? '❌ Je ne suis plus disponible' : '➕ Je participe'}
         </Button>
       </div>
     </Modal>
