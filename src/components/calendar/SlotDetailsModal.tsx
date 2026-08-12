@@ -160,7 +160,7 @@ export function SlotDetailsModal({
           🎾 Réserver le terrain
         </a>
       )}
-
+      
       <div className="space-y-3">
         <Input
           value={nickname}
