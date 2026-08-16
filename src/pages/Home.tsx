@@ -25,7 +25,7 @@ export function Home() {
         className="pointer-events-none absolute left-1/2 top-1/2 h-[140vh] w-[140vh] max-w-none -translate-x-1/2 -translate-y-1/2 select-none"
       />
 
-      <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
+      <div className="safe-top-corner absolute right-4 z-20 sm:right-6">
         <LanguageToggle />
       </div>
 

@@ -152,3 +152,10 @@ body {
 .safe-top {
   padding-top: env(safe-area-inset-top);
 }
+
+/* Same safe-area logic as .safe-top, but for elements positioned with
+   `absolute` in a page corner (e.g. the language toggle on Home,
+   CreateGroup, JoinGroup) rather than a full-width header. */
+.safe-top-corner {
+  top: calc(env(safe-area-inset-top) + 1rem);
+}

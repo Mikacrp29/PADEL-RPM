@@ -52,7 +52,7 @@ export function CreateGroup() {
   if (createdGroup) {
     return (
       <div className="relative flex min-h-screen items-center justify-center px-6">
-        <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+        <div className="safe-top-corner absolute right-4 z-20 sm:right-6">
           <LanguageToggle />
         </div>
         <div className="w-full max-w-md animate-fade-up rounded-2xl border border-court-600 bg-court-900 p-8 text-center">
@@ -93,7 +93,7 @@ export function CreateGroup() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center px-6">
-      <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+      <div className="safe-top-corner absolute right-4 z-20 sm:right-6">
         <LanguageToggle />
       </div>
       <div className="w-full max-w-md">
