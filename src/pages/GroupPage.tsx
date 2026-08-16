@@ -4,6 +4,7 @@ import { Search } from 'lucide-react';
 import { useGroup } from '../contexts/GroupContext';
 import { useSlots } from '../hooks/useSlots';
 import { useLocalIdentity } from '../hooks/useLocalIdentity';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Navbar } from '../components/layout/Navbar';
 import { Dashboard } from '../components/layout/Dashboard';
 import { GroupCalendar } from '../components/calendar/GroupCalendar';
@@ -13,14 +14,23 @@ import { createSlot, joinSlot, leaveSlot, deleteSlot } from '../firebase/slots';
 import { touchGroupMemberCount } from '../firebase/groups';
 import type { Slot } from '../types';
 import { getSlotStatus } from '../types';
+import type { TranslationKey } from '../i18n/translations';
 
 type Filter = 'all' | 'ready' | 'upcoming' | 'mine';
+
+const FILTER_KEY: Record<Filter, TranslationKey> = {
+  all: 'filter.all',
+  upcoming: 'filter.upcoming',
+  ready: 'filter.ready',
+  mine: 'filter.mine',
+};
 
 export function GroupPage() {
   const { code } = useParams();
   const navigate = useNavigate();
   const { group, loading, error, loadGroup } = useGroup();
   const { nickname, setNickname, setLastGroupCode } = useLocalIdentity();
+  const { t } = useLanguage();
   const { slots } = useSlots(group?.id ?? null);
 
   const [range, setRange] = useState<{ start: Date; end: Date } | null>(null);
@@ -68,7 +78,7 @@ export function GroupPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center text-mist-300">
-        Chargement du groupe…
+        {t('groupPage.loading')}
       </div>
     );
   }
@@ -76,18 +86,18 @@ export function GroupPage() {
   if (error || !group) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
-        <p className="text-mist-300">{error ?? "Ce groupe n'existe pas."}</p>
+        <p className="text-mist-300">{error ?? t('groupPage.notFound')}</p>
         <button
           onClick={() => navigate('/join')}
           className="text-sm text-ball underline underline-offset-4"
         >
-          Essayer un autre code
+          {t('groupPage.tryAnotherCode')}
         </button>
       </div>
     );
   }
 
- const handleCreateSlot = async (nick: string, start: Date, end: Date, club: string) => {
+  const handleCreateSlot = async (nick: string, start: Date, end: Date, club: string) => {
     await createSlot(group.id, start, end, nick, club);
     if (nick.trim() && nick.trim() !== nickname) setNickname(nick.trim());
     await touchGroupMemberCount(group.id).catch(() => {});
@@ -103,12 +113,15 @@ export function GroupPage() {
       (p) => p.name.toLowerCase() === nick.toLowerCase()
     );
     if (!participant) return;
-    // If this was the only participant, remove the whole slot instead of
-    // leaving an empty, orphaned entry sitting on the calendar forever.
+    // Always remove the participant first — Firestore's rules only allow
+    // deleting a slot that already has 0 participants, so deleting before
+    // this step gets silently rejected by the security rules (this was the
+    // bug: leaving the last player did neither).
+    await leaveSlot(group.id, slot.id, participant);
     if (slot.participants.length === 1) {
+      // That was the last participant — the slot is now empty, so remove
+      // it too instead of leaving an orphaned empty entry on the calendar.
       await deleteSlot(group.id, slot.id);
-    } else {
-      await leaveSlot(group.id, slot.id, participant);
     }
   };
 
@@ -130,14 +143,7 @@ export function GroupPage() {
         <Dashboard slots={slots} memberCount={group.memberCount} />
 
         <div className="flex flex-wrap items-center gap-2">
-          {(
-            [
-              ['all', 'Tous'],
-              ['upcoming', 'À venir'],
-              ['ready', 'Matchs validés'],
-              ['mine', 'Mes disponibilités'],
-            ] as [Filter, string][]
-          ).map(([value, label]) => (
+          {(Object.keys(FILTER_KEY) as Filter[]).map((value) => (
             <button
               key={value}
               onClick={() => setFilter(value)}
@@ -147,7 +153,7 @@ export function GroupPage() {
                   : 'bg-court-800 text-mist-300 hover:text-mist-100'
               }`}
             >
-              {label}
+              {t(FILTER_KEY[value])}
             </button>
           ))}
           <div className="ml-auto flex items-center gap-2 rounded-full border border-court-600 bg-court-800 px-3 py-1.5">
@@ -163,7 +169,7 @@ export function GroupPage() {
                 onClick={() => setDateFilter('')}
                 className="text-xs text-mist-500 hover:text-mist-100"
               >
-                effacer
+                {t('filter.clear')}
               </button>
             )}
           </div>

@@ -6,6 +6,7 @@ import interactionPlugin, { type DateClickArg } from '@fullcalendar/interaction'
 import type { EventClickArg, DateSelectArg } from '@fullcalendar/core';
 import type { Slot } from '../../types';
 import { getSlotStatus, SLOT_STATUS_COLOR } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(
@@ -22,12 +23,6 @@ function useIsMobile() {
 
 type ViewKey = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay';
 
-const VIEW_OPTIONS: { key: ViewKey; label: string }[] = [
-  { key: 'dayGridMonth', label: 'Mois' },
-  { key: 'timeGridWeek', label: 'Semaine' },
-  { key: 'timeGridDay', label: 'Jour' },
-];
-
 interface GroupCalendarProps {
   slots: Slot[];
   onSelectRange: (start: Date, end: Date) => void;
@@ -38,6 +33,13 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
   const calendarRef = useRef<FullCalendar>(null);
   const isMobile = useIsMobile();
   const [activeView, setActiveView] = useState<ViewKey>('dayGridMonth');
+  const { t, language } = useLanguage();
+
+  const viewOptions: { key: ViewKey; label: string }[] = [
+    { key: 'dayGridMonth', label: t('calendar.month') },
+    { key: 'timeGridWeek', label: t('calendar.week') },
+    { key: 'timeGridDay', label: t('calendar.day') },
+  ];
 
   const events = useMemo(
     () =>
@@ -83,14 +85,15 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
     calendarRef.current?.getApi().changeView(view);
   };
 
-  // Month view always uses short weekday labels ("lun", "mar"...) so the
-  // header never wraps onto two lines, on phone or desktop.
+  // Month view always uses short weekday labels ("lun"/"Mon"...) so the
+  // header never wraps onto two lines, on phone or desktop, in either
+  // language.
   const monthViewOptions = { dayHeaderFormat: { weekday: 'short' as const } };
 
   return (
     <div className="rounded-2xl border border-court-700 bg-court-900 p-2.5 sm:p-5">
       <div className="mb-3 flex justify-center gap-1 rounded-xl bg-court-800 p-1">
-        {VIEW_OPTIONS.map(({ key, label }) => (
+        {viewOptions.map(({ key, label }) => (
           <button
             key={key}
             onClick={() => changeView(key)}
@@ -113,7 +116,7 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
         }}
         headerToolbar={{ left: 'prev,next today', center: 'title', right: '' }}
         initialView="dayGridMonth"
-        locale="fr"
+        locale={language === 'en' ? 'en' : 'fr'}
         firstDay={1}
         height="auto"
         contentHeight="auto"
@@ -131,7 +134,7 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
         allDaySlot={false}
         nowIndicator
         eventDisplay="block"
-        buttonText={{ today: "aujourd'hui" }}
+        buttonText={{ today: t('calendar.today') }}
       />
     </div>
   );

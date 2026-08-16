@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { CalendarDays, Trophy, Clock, Users } from 'lucide-react';
 import type { Slot } from '../../types';
 import { getSlotStatus } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface DashboardProps {
   slots: Slot[];
@@ -17,6 +18,8 @@ function startOfWeek(d: Date) {
 }
 
 export function Dashboard({ slots, memberCount }: DashboardProps) {
+  const { t, language } = useLanguage();
+
   const stats = useMemo(() => {
     const now = new Date();
     const weekStart = startOfWeek(now);
@@ -37,22 +40,24 @@ export function Dashboard({ slots, memberCount }: DashboardProps) {
     return { thisWeekCount: thisWeek.length, validatedCount: validated.length, upcoming };
   }, [slots]);
 
+  const dateLocale = language === 'en' ? 'en-GB' : 'fr-FR';
+
   const cards = [
     {
       icon: CalendarDays,
-      label: 'Créneaux cette semaine',
+      label: t('dashboard.slotsThisWeek'),
       value: stats.thisWeekCount,
     },
     {
       icon: Trophy,
-      label: 'Matchs validés',
+      label: t('dashboard.validatedMatches'),
       value: stats.validatedCount,
     },
     {
       icon: Clock,
-      label: 'Prochain match',
+      label: t('dashboard.nextMatch'),
       value: stats.upcoming
-        ? stats.upcoming.start.toDate().toLocaleDateString('fr-FR', {
+        ? stats.upcoming.start.toDate().toLocaleDateString(dateLocale, {
             weekday: 'short',
             day: 'numeric',
             month: 'short',
@@ -61,7 +66,7 @@ export function Dashboard({ slots, memberCount }: DashboardProps) {
     },
     {
       icon: Users,
-      label: 'Joueurs du groupe',
+      label: t('dashboard.groupPlayers'),
       value: memberCount,
     },
   ];

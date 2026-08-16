@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface ModalProps {
   open: boolean;
@@ -11,6 +12,8 @@ interface ModalProps {
 }
 
 export function Modal({ open, onClose, title, children, className }: ModalProps) {
+  const { t } = useLanguage();
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
@@ -37,7 +40,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
           <button
             onClick={onClose}
             className="rounded-lg p-1 text-mist-500 transition-colors hover:bg-court-800 hover:text-mist-100"
-            aria-label="Fermer"
+            aria-label={t('modal.close')}
           >
             <X size={20} />
           </button>

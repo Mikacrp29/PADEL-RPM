@@ -6,6 +6,7 @@ import { Input } from '../ui/Input';
 import { StatusBadge } from '../ui/StatusBadge';
 import type { Slot } from '../../types';
 import { getSlotStatus } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface SlotDetailsModalProps {
   slot: Slot | null;
@@ -26,6 +27,7 @@ export function SlotDetailsModal({
   onLeave,
   onDelete,
 }: SlotDetailsModalProps) {
+  const { t, language } = useLanguage();
   const [nickname, setNickname] = useState(defaultNickname);
   const [club, setClub] = useState('');
   const [busy, setBusy] = useState(false);
@@ -41,7 +43,7 @@ export function SlotDetailsModal({
 
   const handleClick = async () => {
     if (!nickname.trim()) {
-      setError('Indique ton nom ou surnom.');
+      setError(t('createSlot.errorNoNickname'));
       return;
     }
     setBusy(true);
@@ -51,14 +53,14 @@ export function SlotDetailsModal({
         await onLeave(slot, nickname.trim());
       } else {
         if (slot.participants.some((p) => p.name.toLowerCase() === nickname.trim().toLowerCase())) {
-          setError('Ce surnom est déjà inscrit sur ce créneau.');
+          setError(t('slotDetails.errorDuplicate'));
           return;
         }
         await onJoin(slot, nickname.trim(), club.trim());
         setClub('');
       }
     } catch {
-      setError('Une erreur est survenue. Réessaie.');
+      setError(t('slotDetails.errorGeneric'));
     } finally {
       setBusy(false);
     }
@@ -71,23 +73,24 @@ export function SlotDetailsModal({
       await onDelete(slot);
       onClose();
     } catch {
-      setError('Impossible de supprimer ce créneau. Réessaie.');
+      setError(t('slotDetails.errorDeleteFailed'));
       setBusy(false);
     }
   };
 
-  const dateLabel = slot.start.toDate().toLocaleDateString('fr-FR', {
+  const dateLocale = language === 'en' ? 'en-GB' : 'fr-FR';
+  const dateLabel = slot.start.toDate().toLocaleDateString(dateLocale, {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
   });
-  const timeLabel = `${slot.start.toDate().toLocaleTimeString('fr-FR', {
+  const timeLabel = `${slot.start.toDate().toLocaleTimeString(dateLocale, {
     hour: '2-digit',
     minute: '2-digit',
-  })} – ${slot.end.toDate().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+  })} – ${slot.end.toDate().toLocaleTimeString(dateLocale, { hour: '2-digit', minute: '2-digit' })}`;
 
   return (
-    <Modal open={!!slot} onClose={onClose} title="Détails du créneau">
+    <Modal open={!!slot} onClose={onClose} title={t('slotDetails.title')}>
       <div className="mb-4 space-y-1">
         <p className="capitalize text-mist-100">{dateLabel}</p>
         <p className="font-mono text-sm text-mist-300">{timeLabel}</p>
@@ -101,12 +104,14 @@ export function SlotDetailsModal({
         <div className="mb-5">
           {confirmingDelete ? (
             <div className="flex items-center gap-2 rounded-xl border border-clay/40 bg-clay/10 p-3">
-              <p className="flex-1 text-sm text-mist-100">Supprimer ce créneau vide ?</p>
+              <p className="flex-1 text-sm text-mist-100">
+                {t('slotDetails.deleteEmptyConfirm')}
+              </p>
               <Button size="sm" variant="ghost" onClick={() => setConfirmingDelete(false)}>
-                Annuler
+                {t('slotDetails.cancel')}
               </Button>
               <Button size="sm" variant="danger" onClick={handleDelete} disabled={busy}>
-                {busy ? 'Suppression…' : 'Confirmer'}
+                {busy ? t('slotDetails.deleting') : t('slotDetails.confirm')}
               </Button>
             </div>
           ) : (
@@ -115,16 +120,18 @@ export function SlotDetailsModal({
               className="flex items-center gap-1.5 text-sm text-mist-500 transition-colors hover:text-clay"
             >
               <Trash2 size={14} />
-              Supprimer ce créneau
+              {t('slotDetails.deleteSlot')}
             </button>
           )}
         </div>
       )}
 
       <div className="mb-5 space-y-2">
-        <p className="text-sm text-mist-300">Joueurs inscrits ({slot.participants.length}/4)</p>
+        <p className="text-sm text-mist-300">
+          {t('slotDetails.playersRegistered')} ({slot.participants.length}/4)
+        </p>
         {slot.participants.length === 0 ? (
-          <p className="text-sm text-mist-500">Personne pour l'instant.</p>
+          <p className="text-sm text-mist-500">{t('slotDetails.noOneYet')}</p>
         ) : (
           <ul className="space-y-1.5">
             {slot.participants.map((p) => (
@@ -157,21 +164,21 @@ export function SlotDetailsModal({
           rel="noreferrer"
           className="mb-4 block rounded-xl bg-slot-ready/15 border border-slot-ready/40 px-4 py-3 text-center text-sm font-semibold text-mist-100 transition-colors hover:bg-slot-ready/25"
         >
-          🎾 Réserver le terrain
+          {t('slotDetails.bookCourt')}
         </a>
       )}
-      
+
       <div className="space-y-3">
         <Input
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
-          placeholder="Ton nom ou surnom"
+          placeholder={t('slotDetails.nicknamePlaceholder')}
         />
         {!alreadyIn && (
           <Input
             value={club}
             onChange={(e) => setClub(e.target.value)}
-            placeholder="Club proposé (optionnel)"
+            placeholder={t('slotDetails.clubPlaceholder')}
           />
         )}
         {error && <p className="text-sm text-clay">{error}</p>}
@@ -182,7 +189,7 @@ export function SlotDetailsModal({
           onClick={handleClick}
           disabled={busy}
         >
-          {busy ? 'Un instant…' : alreadyIn ? '❌ Je ne suis plus disponible' : '➕ Je participe'}
+          {busy ? t('slotDetails.wait') : alreadyIn ? t('slotDetails.leave') : t('slotDetails.join')}
         </Button>
       </div>
     </Modal>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Modal } from '../ui/Modal';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface CreateSlotModalProps {
   open: boolean;
@@ -22,6 +23,7 @@ export function CreateSlotModal({
   defaultNickname,
   onCreate,
 }: CreateSlotModalProps) {
+  const { t, language } = useLanguage();
   const [nickname, setNickname] = useState(defaultNickname);
   const [club, setClub] = useState('');
   const [startTime, setStartTime] = useState('19:00');
@@ -43,7 +45,7 @@ export function CreateSlotModal({
 
   const handleSubmit = async () => {
     if (!nickname.trim()) {
-      setError('Indique ton nom ou surnom.');
+      setError(t('createSlot.errorNoNickname'));
       return;
     }
     const [sh, sm] = startTime.split(':').map(Number);
@@ -54,7 +56,7 @@ export function CreateSlotModal({
     end.setHours(eh, em, 0, 0);
 
     if (end <= start) {
-      setError("L'heure de fin doit être après l'heure de début.");
+      setError(t('createSlot.errorTimeOrder'));
       return;
     }
 
@@ -64,59 +66,62 @@ export function CreateSlotModal({
       await onCreate(nickname.trim(), start, end, club.trim());
       onClose();
     } catch {
-      setError('Impossible de créer le créneau. Réessaie.');
+      setError(t('createSlot.errorFailed'));
     } finally {
       setSubmitting(false);
     }
   };
 
-  const dateLabel = range.start.toLocaleDateString('fr-FR', {
+  const dateLocale = language === 'en' ? 'en-GB' : 'fr-FR';
+  const dateLabel = range.start.toLocaleDateString(dateLocale, {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
   });
 
   return (
-    <Modal open={open} onClose={onClose} title="Nouveau créneau">
+    <Modal open={open} onClose={onClose} title={t('createSlot.title')}>
       <p className="mb-4 text-sm capitalize text-mist-300">{dateLabel}</p>
 
       <div className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm text-mist-300">Nom ou surnom</label>
+          <label className="mb-1.5 block text-sm text-mist-300">{t('createSlot.nickname')}</label>
           <Input
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
-            placeholder="Ex. Julien"
+            placeholder={t('createSlot.nicknamePlaceholder')}
             autoFocus
           />
         </div>
 
         <div className="flex gap-3">
           <div className="flex-1">
-            <label className="mb-1.5 block text-sm text-mist-300">Heure de début</label>
+            <label className="mb-1.5 block text-sm text-mist-300">
+              {t('createSlot.startTime')}
+            </label>
             <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
           </div>
           <div className="flex-1">
-            <label className="mb-1.5 block text-sm text-mist-300">Heure de fin</label>
+            <label className="mb-1.5 block text-sm text-mist-300">{t('createSlot.endTime')}</label>
             <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
           </div>
         </div>
 
         <div>
           <label className="mb-1.5 block text-sm text-mist-300">
-            Club proposé <span className="text-mist-500">(optionnel)</span>
+            {t('createSlot.club')} <span className="text-mist-500">{t('createSlot.optional')}</span>
           </label>
           <Input
             value={club}
             onChange={(e) => setClub(e.target.value)}
-            placeholder="Ex. Padel Club Anderlecht"
+            placeholder={t('createSlot.clubPlaceholder')}
           />
         </div>
 
         {error && <p className="text-sm text-clay">{error}</p>}
 
         <Button className="w-full" size="lg" onClick={handleSubmit} disabled={submitting}>
-          {submitting ? 'Création…' : 'Créer le créneau'}
+          {submitting ? t('createSlot.creating') : t('createSlot.submit')}
         </Button>
       </div>
     </Modal>
