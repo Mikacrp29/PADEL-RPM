@@ -1,13 +1,5 @@
-import { getSlotStatus, SLOT_STATUS_COLOR, type SlotStatus } from '../../types';
+import { getSlotStatus, SLOT_STATUS_COLOR, SLOT_STATUS_LABEL_KEY } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
-import type { TranslationKey } from '../../i18n/translations';
-
-const STATUS_KEY: Record<SlotStatus, TranslationKey> = {
-  empty: 'status.empty',
-  low: 'status.low',
-  mid: 'status.mid',
-  ready: 'status.ready',
-};
 
 export function StatusBadge({ count }: { count: number }) {
   const { t } = useLanguage();
@@ -18,7 +10,7 @@ export function StatusBadge({ count }: { count: number }) {
         className="h-2 w-2 rounded-full"
         style={{ backgroundColor: SLOT_STATUS_COLOR[status] }}
       />
-      {t(STATUS_KEY[status])}
+      {t(SLOT_STATUS_LABEL_KEY[status])}
     </span>
   );
 }

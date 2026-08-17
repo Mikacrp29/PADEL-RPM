@@ -12,6 +12,8 @@ export const translations = {
     'home.noFavorites': '⭐ Aucun groupe favori',
     'home.myGroups': '⭐ Mes groupes',
     'home.removeFavorite': 'Retirer des favoris',
+    'home.previewTitle': 'À quoi ça ressemble',
+    'home.previewSubtitle': 'Chaque créneau change de couleur selon le nombre de joueurs.',
 
     // CreateGroup
     'createGroup.back': 'Retour',
@@ -128,6 +130,8 @@ export const translations = {
     'home.noFavorites': '⭐ No favorite groups',
     'home.myGroups': '⭐ My groups',
     'home.removeFavorite': 'Remove from favorites',
+    'home.previewTitle': 'What it looks like',
+    'home.previewSubtitle': 'Each slot changes color based on how many players joined.',
 
     // CreateGroup
     'createGroup.back': 'Back',

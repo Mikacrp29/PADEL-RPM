@@ -1,4 +1,5 @@
 import type { Timestamp } from 'firebase/firestore';
+import type { TranslationKey } from '../i18n/translations';
 
 /** A private friend group. Stored at /groups/{groupId} */
 export interface Group {
@@ -50,11 +51,11 @@ export function getSlotStatus(count: number): SlotStatus {
   return 'ready';
 }
 
-export const SLOT_STATUS_LABEL: Record<SlotStatus, string> = {
-  empty: 'Aucun joueur',
-  low: 'En attente de joueurs',
-  mid: 'Encore 1 joueur',
-  ready: 'Match possible',
+export const SLOT_STATUS_LABEL_KEY: Record<SlotStatus, TranslationKey> = {
+  empty: 'status.empty',
+  low: 'status.low',
+  mid: 'status.mid',
+  ready: 'status.ready',
 };
 
 export const SLOT_STATUS_COLOR: Record<SlotStatus, string> = {

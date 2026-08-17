@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { LanguageToggle } from '../components/ui/LanguageToggle';
+import { CalendarPreview } from '../components/ui/CalendarPreview';
 import { useFavoriteGroups } from '../hooks/useFavoriteGroups';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -53,6 +54,8 @@ export function Home() {
             {t('home.joinGroup')}
           </Button>
         </div>
+
+        <CalendarPreview />
 
         <div className="mt-10 text-left">
           {groups.length === 0 ? (
