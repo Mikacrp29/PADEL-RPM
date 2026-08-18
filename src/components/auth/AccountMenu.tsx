@@ -1,0 +1,82 @@
+import { useState } from 'react';
+import { LogOut, User as UserIcon } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
+import { AuthModal } from './AuthModal';
+
+export function AccountMenu({ className = '' }: { className?: string }) {
+  const { user, profile, signOut, setNickname } = useAuth();
+  const { t } = useLanguage();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [nicknameDraft, setNicknameDraft] = useState('');
+
+  if (!user) {
+    return (
+      <>
+        <Button
+          size="sm"
+          variant="secondary"
+          className={className}
+          onClick={() => setModalOpen(true)}
+        >
+          <UserIcon size={14} />
+          {t('auth.signIn')}
+        </Button>
+        <AuthModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      </>
+    );
+  }
+
+  const initial = (profile?.nickname || user.email || '?').charAt(0).toUpperCase();
+
+  return (
+    <div className={`relative ${className}`}>
+      <button
+        onClick={() => {
+          setNicknameDraft(profile?.nickname ?? '');
+          setPanelOpen((v) => !v);
+        }}
+        className="flex items-center gap-2 rounded-lg bg-court-800 px-3 py-1.5 text-xs font-medium text-mist-100 transition-colors hover:bg-court-700"
+      >
+        {user.photoURL ? (
+          <img src={user.photoURL} alt="" className="h-5 w-5 rounded-full" referrerPolicy="no-referrer" />
+        ) : (
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-ball/20 text-[10px] font-semibold text-ball">
+            {initial}
+          </span>
+        )}
+        {profile?.nickname || user.email}
+      </button>
+
+      {panelOpen && (
+        <div className="absolute right-0 top-full z-40 mt-2 w-64 animate-pop rounded-xl border border-court-600 bg-court-900 p-4 shadow-2xl">
+          <p className="mb-1 text-xs text-mist-500">{t('auth.nickname')}</p>
+          <Input
+            value={nicknameDraft}
+            onChange={(e) => setNicknameDraft(e.target.value)}
+            onBlur={() => {
+              if (nicknameDraft.trim() && nicknameDraft.trim() !== profile?.nickname) {
+                setNickname(nicknameDraft.trim());
+              }
+            }}
+            onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+            className="mb-3"
+          />
+          <button
+            onClick={async () => {
+              await signOut();
+              setPanelOpen(false);
+            }}
+            className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-clay transition-colors hover:bg-clay/10"
+          >
+            <LogOut size={15} />
+            {t('auth.signOut')}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

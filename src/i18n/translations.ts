@@ -15,6 +15,30 @@ export const translations = {
     'home.previewTitle': 'À quoi ça ressemble',
     'home.previewSubtitle': 'Chaque créneau change de couleur selon le nombre de joueurs.',
 
+    // Auth
+    'auth.signIn': 'Se connecter',
+    'auth.signUp': "S'inscrire",
+    'auth.signOut': 'Se déconnecter',
+    'auth.myAccount': 'Mon compte',
+    'auth.continueWithGoogle': 'Continuer avec Google',
+    'auth.or': 'ou',
+    'auth.email': 'Adresse e-mail',
+    'auth.password': 'Mot de passe',
+    'auth.nickname': 'Ton nom ou surnom',
+    'auth.noAccount': 'Pas encore de compte ?',
+    'auth.haveAccount': 'Déjà un compte ?',
+    'auth.forgotPassword': 'Mot de passe oublié ?',
+    'auth.resetSent': 'E-mail de réinitialisation envoyé.',
+    'auth.errorGeneric': 'Identifiants incorrects ou compte déjà existant.',
+    'auth.titleSignIn': 'Se connecter',
+    'auth.titleSignUp': 'Créer un compte',
+    'auth.submitSignIn': 'Se connecter',
+    'auth.submitSignUp': 'Créer mon compte',
+    'auth.submitting': 'Un instant…',
+    'auth.accountBenefits':
+      'Un compte gratuit relie tes favoris à tous tes appareils et débloque les notifications quand un créneau se remplit.',
+    'auth.continueWithoutAccount': 'Continuer sans compte',
+
     // CreateGroup
     'createGroup.back': 'Retour',
     'createGroup.title': 'Créer un groupe',
@@ -132,6 +156,30 @@ export const translations = {
     'home.removeFavorite': 'Remove from favorites',
     'home.previewTitle': 'What it looks like',
     'home.previewSubtitle': 'Each slot changes color based on how many players joined.',
+
+    // Auth
+    'auth.signIn': 'Sign in',
+    'auth.signUp': 'Sign up',
+    'auth.signOut': 'Sign out',
+    'auth.myAccount': 'My account',
+    'auth.continueWithGoogle': 'Continue with Google',
+    'auth.or': 'or',
+    'auth.email': 'Email address',
+    'auth.password': 'Password',
+    'auth.nickname': 'Your name or nickname',
+    'auth.noAccount': "Don't have an account?",
+    'auth.haveAccount': 'Already have an account?',
+    'auth.forgotPassword': 'Forgot your password?',
+    'auth.resetSent': 'Password reset email sent.',
+    'auth.errorGeneric': 'Incorrect credentials or account already exists.',
+    'auth.titleSignIn': 'Sign in',
+    'auth.titleSignUp': 'Create an account',
+    'auth.submitSignIn': 'Sign in',
+    'auth.submitSignUp': 'Create my account',
+    'auth.submitting': 'One moment…',
+    'auth.accountBenefits':
+      'A free account syncs your favorites across devices and unlocks notifications when a slot fills up.',
+    'auth.continueWithoutAccount': 'Continue without an account',
 
     // CreateGroup
     'createGroup.back': 'Back',

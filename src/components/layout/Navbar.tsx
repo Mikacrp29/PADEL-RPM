@@ -4,6 +4,7 @@ import { Check, Copy, Users, Star } from 'lucide-react';
 import { useFavoriteGroups } from '../../hooks/useFavoriteGroups';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { LanguageToggle } from '../ui/LanguageToggle';
+import { AccountMenu } from '../auth/AccountMenu';
 import type { Group } from '../../types';
 
 interface NavbarProps {
@@ -64,6 +65,7 @@ export function Navbar({ group, nickname, onNicknameChange }: NavbarProps) {
             <Star size={16} className={favorite ? 'fill-ball text-ball' : ''} />
           </button>
 
+          <AccountMenu className="hidden sm:block" />
           <LanguageToggle className="hidden sm:flex" />
 
           <button

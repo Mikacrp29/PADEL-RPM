@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { LanguageToggle } from '../components/ui/LanguageToggle';
 import { CalendarPreview } from '../components/ui/CalendarPreview';
+import { AccountMenu } from '../components/auth/AccountMenu';
 import { useFavoriteGroups } from '../hooks/useFavoriteGroups';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -26,7 +27,8 @@ export function Home() {
         className="pointer-events-none absolute left-1/2 top-1/2 h-[140vh] w-[140vh] max-w-none -translate-x-1/2 -translate-y-1/2 select-none"
       />
 
-      <div className="safe-top-corner absolute right-4 z-20 sm:right-6">
+      <div className="safe-top-corner absolute right-4 z-20 flex items-center gap-2 sm:right-6">
+        <AccountMenu />
         <LanguageToggle />
       </div>
 
