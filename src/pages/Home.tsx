@@ -33,11 +33,6 @@ export function Home() {
       </div>
 
       <div className="relative z-10 w-full max-w-md text-center">
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-court-600 bg-court-800/60 px-3 py-1 text-xs font-medium text-mist-300">
-          <span className="h-1.5 w-1.5 rounded-full bg-ball" />
-          {t('home.badge')}
-        </div>
-
         <h1 className="mb-3 font-display text-4xl font-bold leading-tight text-mist-100 sm:text-5xl">
           Padel <span className="text-ball">Ensemble</span>
         </h1>
@@ -56,8 +51,6 @@ export function Home() {
             {t('home.joinGroup')}
           </Button>
         </div>
-
-        <CalendarPreview />
 
         <div className="mt-10 text-left">
           {groups.length === 0 ? (
@@ -98,6 +91,8 @@ export function Home() {
             </>
           )}
         </div>
+
+        <CalendarPreview />
       </div>
     </div>
   );
