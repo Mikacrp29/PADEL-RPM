@@ -6,6 +6,7 @@ import { useSlots } from '../hooks/useSlots';
 import { useLocalIdentity } from '../hooks/useLocalIdentity';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useRecentGroups } from '../hooks/useRecentGroups';
 import { Navbar } from '../components/layout/Navbar';
 import { Dashboard } from '../components/layout/Dashboard';
 import { GroupCalendar } from '../components/calendar/GroupCalendar';
@@ -33,6 +34,7 @@ export function GroupPage() {
   const { nickname, setNickname, setLastGroupCode } = useLocalIdentity();
   const { t } = useLanguage();
   const { user } = useAuth();
+  const { addRecent } = useRecentGroups();
   const { slots } = useSlots(group?.id ?? null);
 
   const [range, setRange] = useState<{ start: Date; end: Date } | null>(null);
@@ -49,8 +51,9 @@ export function GroupPage() {
     if (group) {
       document.title = `${group.name} · Padel Ensemble`;
       setLastGroupCode(group.inviteCode);
+      addRecent(group.inviteCode, group.name);
     }
-  }, [group, setLastGroupCode]);
+  }, [group, setLastGroupCode, addRecent]);
 
   // Keep the selected slot's data fresh as real-time updates come in.
   useEffect(() => {

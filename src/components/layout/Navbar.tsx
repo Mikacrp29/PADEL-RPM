@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Check, Copy, Users, Star } from 'lucide-react';
+import { Share2, Users, Star } from 'lucide-react';
 import { useFavoriteGroups } from '../../hooks/useFavoriteGroups';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { LanguageToggle } from '../ui/LanguageToggle';
 import { AccountMenu } from '../auth/AccountMenu';
+import { InviteModal } from './InviteModal';
 import type { Group } from '../../types';
 
 interface NavbarProps {
@@ -14,20 +15,13 @@ interface NavbarProps {
 }
 
 export function Navbar({ group, nickname, onNicknameChange }: NavbarProps) {
-  const [copied, setCopied] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(nickname);
   const { isFavorite, addGroup, removeGroup } = useFavoriteGroups();
   const { t } = useLanguage();
 
   const favorite = isFavorite(group.inviteCode);
-  const inviteLink = `${window.location.origin}/join/${group.inviteCode}`;
-
-  const copy = async () => {
-    await navigator.clipboard.writeText(inviteLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
 
   const toggleFavorite = () => {
     if (favorite) removeGroup(group.inviteCode);
@@ -69,11 +63,13 @@ export function Navbar({ group, nickname, onNicknameChange }: NavbarProps) {
           <LanguageToggle className="hidden sm:flex" />
 
           <button
-            onClick={copy}
-            className="hidden items-center gap-1.5 rounded-lg border border-court-600 px-3 py-1.5 text-xs text-mist-300 transition-colors hover:border-ball/50 hover:text-mist-100 sm:flex"
+            onClick={() => setInviteOpen(true)}
+            aria-label={t('navbar.invite')}
+            className="flex items-center gap-1.5 rounded-lg p-1.5 text-mist-500 transition-colors hover:bg-court-800 hover:text-ball sm:border sm:border-court-600 sm:px-3 sm:py-1.5 sm:text-xs sm:text-mist-300 sm:hover:border-ball/50 sm:hover:text-mist-100"
           >
-            {copied ? <Check size={14} /> : <Copy size={14} />}
-            {t('navbar.invite')}
+            <Share2 size={16} className="sm:hidden" />
+            <Share2 size={14} className="hidden sm:block" />
+            <span className="hidden sm:inline">{t('navbar.invite')}</span>
           </button>
 
           {editing ? (
@@ -102,6 +98,8 @@ export function Navbar({ group, nickname, onNicknameChange }: NavbarProps) {
           )}
         </div>
       </div>
+
+      <InviteModal open={inviteOpen} onClose={() => setInviteOpen(false)} group={group} />
     </header>
   );
 }

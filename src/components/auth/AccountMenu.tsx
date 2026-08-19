@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { LogOut, User as UserIcon, Mail } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -12,6 +12,21 @@ export function AccountMenu({ className = '' }: { className?: string }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [nicknameDraft, setNicknameDraft] = useState('');
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Close the panel on an outside click, in addition to the explicit
+  // "Done" button — without this, it stayed open until the person noticed
+  // the small button, which was easy to miss.
+  useEffect(() => {
+    if (!panelOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        setPanelOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [panelOpen]);
 
   if (!user) {
     return (
@@ -33,7 +48,7 @@ export function AccountMenu({ className = '' }: { className?: string }) {
   const initial = (profile?.nickname || user.email || '?').charAt(0).toUpperCase();
 
   return (
-    <div className={`relative ${className}`}>
+    <div ref={panelRef} className={`relative ${className}`}>
       <button
         onClick={() => {
           setNicknameDraft(profile?.nickname ?? '');
@@ -79,16 +94,23 @@ export function AccountMenu({ className = '' }: { className?: string }) {
             </span>
           </label>
 
-          <button
-            onClick={async () => {
-              await signOut();
-              setPanelOpen(false);
-            }}
-            className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-clay transition-colors hover:bg-clay/10"
-          >
-            <LogOut size={15} />
-            {t('auth.signOut')}
-          </button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex-1 text-clay hover:bg-clay/10"
+              onClick={async () => {
+                await signOut();
+                setPanelOpen(false);
+              }}
+            >
+              <LogOut size={14} />
+              {t('auth.signOut')}
+            </Button>
+            <Button size="sm" className="flex-1" onClick={() => setPanelOpen(false)}>
+              {t('common.done')}
+            </Button>
+          </div>
         </div>
       )}
     </div>

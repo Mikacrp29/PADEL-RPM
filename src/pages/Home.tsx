@@ -1,21 +1,27 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Clock } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { LanguageToggle } from '../components/ui/LanguageToggle';
 import { CalendarPreview } from '../components/ui/CalendarPreview';
 import { AccountMenu } from '../components/auth/AccountMenu';
 import { useFavoriteGroups } from '../hooks/useFavoriteGroups';
+import { useRecentGroups } from '../hooks/useRecentGroups';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export function Home() {
   const navigate = useNavigate();
-  const { groups, removeGroup } = useFavoriteGroups();
+  const { groups, removeGroup, isFavorite } = useFavoriteGroups();
+  const { recents } = useRecentGroups();
   const { t } = useLanguage();
 
   useEffect(() => {
     document.title = 'Padel Ensemble';
   }, []);
+
+  // Don't repeat a group in "recently viewed" if it's already pinned above
+  // as a favorite — no need to show the same group twice on the page.
+  const recentsToShow = recents.filter((r) => !isFavorite(r.code));
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-16">
@@ -91,6 +97,32 @@ export function Home() {
             </>
           )}
         </div>
+
+        {recentsToShow.length > 0 && (
+          <div className="mt-6 text-left">
+            <p className="mb-3 flex items-center justify-center gap-1.5 text-center text-sm font-medium text-mist-300">
+              <Clock size={14} className="text-mist-500" />
+              {t('home.recentGroups')}
+            </p>
+            <ul className="space-y-2">
+              {recentsToShow.map((g) => (
+                <li key={g.code}>
+                  <button
+                    onClick={() => navigate(`/g/${g.code}`)}
+                    className="flex w-full min-w-0 items-center gap-2 rounded-xl border border-court-700 bg-court-800/40 px-4 py-3 text-left transition-colors hover:border-court-600"
+                  >
+                    <span className="flex min-w-0 flex-col">
+                      <span className="truncate text-sm font-medium text-mist-100">
+                        {g.name}
+                      </span>
+                      <span className="font-mono text-xs text-mist-500">{g.code}</span>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <CalendarPreview />
       </div>

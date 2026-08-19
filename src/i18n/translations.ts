@@ -39,6 +39,10 @@ export const translations = {
       'Un compte gratuit relie tes favoris à tous tes appareils et débloque les notifications quand un créneau se remplit.',
     'auth.continueWithoutAccount': 'Continuer sans compte',
     'auth.notifyByEmail': 'Me notifier par e-mail quand un créneau se remplit',
+    'common.done': 'Terminé',
+    'home.recentGroups': 'Récemment consultés',
+    'invite.title': 'Inviter des amis',
+    'invite.subtitle': "Partage ce code ou ce lien pour que d'autres rejoignent le groupe.",
 
     // CreateGroup
     'createGroup.back': 'Retour',
@@ -182,6 +186,10 @@ export const translations = {
       'A free account syncs your favorites across devices and unlocks notifications when a slot fills up.',
     'auth.continueWithoutAccount': 'Continue without an account',
     'auth.notifyByEmail': 'Email me when a slot fills up',
+    'common.done': 'Done',
+    'home.recentGroups': 'Recently viewed',
+    'invite.title': 'Invite friends',
+    'invite.subtitle': 'Share this code or link so others can join the group.',
 
     // CreateGroup
     'createGroup.back': 'Back',
