@@ -1,0 +1,48 @@
+name: Deploy Firebase Functions
+
+# Only runs when something in functions/ (or this workflow itself) changes,
+# so a normal website commit never triggers a Firebase deploy.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'functions/**'
+      - 'firebase.json'
+      - '.github/workflows/deploy-functions.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install function dependencies
+        working-directory: functions
+        run: npm ci
+
+      - name: Build functions
+        working-directory: functions
+        run: npm run build
+
+      - name: Write Firebase service account credentials
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > /tmp/firebase-service-account.json
+
+      - name: Store Resend API key as a Firebase secret
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/firebase-service-account.json
+        run: |
+          echo -n "${{ secrets.RESEND_API_KEY }}" | npx firebase-tools functions:secrets:set RESEND_API_KEY \
+            --project padel-rpm --data-file - --non-interactive
+
+      - name: Deploy functions
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/firebase-service-account.json
+        run: npx firebase-tools deploy --only functions --project padel-rpm --non-interactive
+
+      - name: Clean up credentials file
+        if: always()
+        run: rm -f /tmp/firebase-service-account.json

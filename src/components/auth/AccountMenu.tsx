@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LogOut, User as UserIcon } from 'lucide-react';
+import { LogOut, User as UserIcon, Mail } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { Button } from '../ui/Button';
@@ -7,7 +7,7 @@ import { Input } from '../ui/Input';
 import { AuthModal } from './AuthModal';
 
 export function AccountMenu({ className = '' }: { className?: string }) {
-  const { user, profile, signOut, setNickname } = useAuth();
+  const { user, profile, signOut, setNickname, setNotifyByEmail } = useAuth();
   const { t } = useLanguage();
   const [modalOpen, setModalOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -52,7 +52,7 @@ export function AccountMenu({ className = '' }: { className?: string }) {
       </button>
 
       {panelOpen && (
-        <div className="absolute right-0 top-full z-40 mt-2 w-64 animate-pop rounded-xl border border-court-600 bg-court-900 p-4 shadow-2xl">
+        <div className="absolute right-0 top-full z-40 mt-2 w-72 animate-pop rounded-xl border border-court-600 bg-court-900 p-4 shadow-2xl">
           <p className="mb-1 text-xs text-mist-500">{t('auth.nickname')}</p>
           <Input
             value={nicknameDraft}
@@ -63,8 +63,22 @@ export function AccountMenu({ className = '' }: { className?: string }) {
               }
             }}
             onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
-            className="mb-3"
+            className="mb-4"
           />
+
+          <label className="mb-4 flex cursor-pointer items-start gap-2.5 text-sm text-mist-100">
+            <input
+              type="checkbox"
+              checked={profile?.notifyByEmail ?? false}
+              onChange={(e) => setNotifyByEmail(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-ball"
+            />
+            <span className="flex items-start gap-1.5">
+              <Mail size={14} className="mt-0.5 shrink-0 text-mist-500" />
+              {t('auth.notifyByEmail')}
+            </span>
+          </label>
+
           <button
             onClick={async () => {
               await signOut();

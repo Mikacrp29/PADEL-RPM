@@ -5,6 +5,7 @@ import { useGroup } from '../contexts/GroupContext';
 import { useSlots } from '../hooks/useSlots';
 import { useLocalIdentity } from '../hooks/useLocalIdentity';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Navbar } from '../components/layout/Navbar';
 import { Dashboard } from '../components/layout/Dashboard';
 import { GroupCalendar } from '../components/calendar/GroupCalendar';
@@ -31,6 +32,7 @@ export function GroupPage() {
   const { group, loading, error, loadGroup } = useGroup();
   const { nickname, setNickname, setLastGroupCode } = useLocalIdentity();
   const { t } = useLanguage();
+  const { user } = useAuth();
   const { slots } = useSlots(group?.id ?? null);
 
   const [range, setRange] = useState<{ start: Date; end: Date } | null>(null);
@@ -98,13 +100,13 @@ export function GroupPage() {
   }
 
   const handleCreateSlot = async (nick: string, start: Date, end: Date, club: string) => {
-    await createSlot(group.id, start, end, nick, club);
+    await createSlot(group.id, start, end, nick, club, user?.uid);
     if (nick.trim() && nick.trim() !== nickname) setNickname(nick.trim());
     await touchGroupMemberCount(group.id).catch(() => {});
   };
 
   const handleJoin = async (slot: Slot, nick: string, club: string) => {
-    await joinSlot(group.id, slot.id, nick, club);
+    await joinSlot(group.id, slot.id, nick, club, user?.uid);
     setNickname(nick);
   };
 

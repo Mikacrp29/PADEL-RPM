@@ -18,11 +18,18 @@ export interface Group {
  * plain text so a future "partner clubs" dropdown can populate the exact
  * same field without any data migration — the dropdown would just replace
  * the input, not the storage shape.
+ * `uid` is set only when the person was signed in at the moment they
+ * joined — it's how the notification Cloud Function knows which account
+ * (if any) to notify when the slot fills up. Note: since slots are
+ * publicly readable via the invite link (no accounts required), this uid
+ * is visible to anyone in the group — it's an opaque Firebase id, not an
+ * email or name, but worth knowing it isn't private.
  */
 export interface Participant {
   name: string;
   joinedAt: Timestamp | null;
   club?: string;
+  uid?: string;
 }
 
 /** A padel slot on the shared calendar. Stored at /groups/{groupId}/slots/{slotId} */

@@ -38,6 +38,7 @@ export const translations = {
     'auth.accountBenefits':
       'Un compte gratuit relie tes favoris à tous tes appareils et débloque les notifications quand un créneau se remplit.',
     'auth.continueWithoutAccount': 'Continuer sans compte',
+    'auth.notifyByEmail': 'Me notifier par e-mail quand un créneau se remplit',
 
     // CreateGroup
     'createGroup.back': 'Retour',
@@ -180,6 +181,7 @@ export const translations = {
     'auth.accountBenefits':
       'A free account syncs your favorites across devices and unlocks notifications when a slot fills up.',
     'auth.continueWithoutAccount': 'Continue without an account',
+    'auth.notifyByEmail': 'Email me when a slot fills up',
 
     // CreateGroup
     'createGroup.back': 'Back',

@@ -8,7 +8,12 @@ import {
   sendResetPasswordEmail,
   signOutUser,
 } from '../firebase/auth';
-import { ensureUserProfile, updateUserNickname, type UserProfile } from '../firebase/users';
+import {
+  ensureUserProfile,
+  updateUserNickname,
+  updateNotificationPrefs,
+  type UserProfile,
+} from '../firebase/users';
 
 interface AuthContextValue {
   user: User | null;
@@ -20,6 +25,7 @@ interface AuthContextValue {
   resetPassword: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
   setNickname: (nickname: string) => Promise<void>;
+  setNotifyByEmail: (value: boolean) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -76,9 +82,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [user]
   );
 
+  const setNotifyByEmail = useCallback(
+    async (value: boolean) => {
+      if (!user) return;
+      await updateNotificationPrefs(user.uid, { notifyByEmail: value });
+      setProfile((prev) => (prev ? { ...prev, notifyByEmail: value } : prev));
+    },
+    [user]
+  );
+
   return (
     <AuthContext.Provider
-      value={{ user, profile, loading, signInGoogle, signUp, signIn, resetPassword, signOut, setNickname }}
+      value={{
+        user,
+        profile,
+        loading,
+        signInGoogle,
+        signUp,
+        signIn,
+        resetPassword,
+        signOut,
+        setNickname,
+        setNotifyByEmail,
+      }}
     >
       {children}
     </AuthContext.Provider>
