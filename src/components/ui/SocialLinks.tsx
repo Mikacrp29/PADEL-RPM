@@ -48,7 +48,7 @@ export function SocialLinks({ className = '' }: { className?: string }) {
       <p className="mb-3 text-center text-xs text-mist-500">{t('home.followUs')}</p>
       <div className="flex justify-center gap-3">
         {items.map(({ key, href, icon: Icon, label }) => (
-          
+          <a
             key={key}
             href={href}
             target="_blank"
