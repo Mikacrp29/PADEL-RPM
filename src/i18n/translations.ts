@@ -14,35 +14,9 @@ export const translations = {
     'home.removeFavorite': 'Retirer des favoris',
     'home.previewTitle': 'À quoi ça ressemble',
     'home.previewSubtitle': 'Chaque créneau change de couleur selon le nombre de joueurs.',
-
-    // Auth
-    'auth.signIn': 'Se connecter',
-    'auth.signUp': "S'inscrire",
-    'auth.signOut': 'Se déconnecter',
-    'auth.myAccount': 'Mon compte',
-    'auth.continueWithGoogle': 'Continuer avec Google',
-    'auth.or': 'ou',
-    'auth.email': 'Adresse e-mail',
-    'auth.password': 'Mot de passe',
-    'auth.nickname': 'Ton nom ou surnom',
-    'auth.noAccount': 'Pas encore de compte ?',
-    'auth.haveAccount': 'Déjà un compte ?',
-    'auth.forgotPassword': 'Mot de passe oublié ?',
-    'auth.resetSent': 'E-mail de réinitialisation envoyé.',
-    'auth.errorGeneric': 'Identifiants incorrects ou compte déjà existant.',
-    'auth.titleSignIn': 'Se connecter',
-    'auth.titleSignUp': 'Créer un compte',
-    'auth.submitSignIn': 'Se connecter',
-    'auth.submitSignUp': 'Créer mon compte',
-    'auth.submitting': 'Un instant…',
-    'auth.accountBenefits':
-      'Un compte gratuit relie tes favoris à tous tes appareils et débloque les notifications quand un créneau se remplit.',
-    'auth.continueWithoutAccount': 'Continuer sans compte',
-    'auth.notifyByEmail': 'Me notifier par e-mail quand un créneau se remplit',
-    'common.done': 'Terminé',
     'home.recentGroups': 'Récemment consultés',
-    'invite.title': 'Inviter des amis',
-    'invite.subtitle': "Partage ce code ou ce lien pour que d'autres rejoignent le groupe.",
+    'home.viewTutorial': '📸 Voir le tuto en images',
+    'home.followUs': 'Suis-nous pour les nouveautés et tutos vidéo',
 
     // CreateGroup
     'createGroup.back': 'Retour',
@@ -143,6 +117,41 @@ export const translations = {
     // Modal
     'modal.close': 'Fermer',
 
+    // Auth
+    'auth.signIn': 'Se connecter',
+    'auth.signUp': "S'inscrire",
+    'auth.signOut': 'Se déconnecter',
+    'auth.myAccount': 'Mon compte',
+    'auth.continueWithGoogle': 'Continuer avec Google',
+    'auth.or': 'ou',
+    'auth.email': 'Adresse e-mail',
+    'auth.password': 'Mot de passe',
+    'auth.nickname': 'Ton nom ou surnom',
+    'auth.noAccount': 'Pas encore de compte ?',
+    'auth.haveAccount': 'Déjà un compte ?',
+    'auth.forgotPassword': 'Mot de passe oublié ?',
+    'auth.resetSent': 'E-mail de réinitialisation envoyé.',
+    'auth.errorGeneric': 'Identifiants incorrects ou compte déjà existant.',
+    'auth.titleSignIn': 'Se connecter',
+    'auth.titleSignUp': 'Créer un compte',
+    'auth.submitSignIn': 'Se connecter',
+    'auth.submitSignUp': 'Créer mon compte',
+    'auth.submitting': 'Un instant…',
+    'auth.accountBenefits':
+      'Un compte gratuit relie tes favoris à tous tes appareils et débloque les notifications quand un créneau se remplit.',
+    'auth.continueWithoutAccount': 'Continuer sans compte',
+    'auth.notifyByEmail': 'Me notifier par e-mail quand un créneau se remplit',
+
+    // Common
+    'common.done': 'Terminé',
+
+    // Invite
+    'invite.title': 'Inviter des amis',
+    'invite.subtitle': "Partage ce code ou ce lien pour que d'autres rejoignent le groupe.",
+
+    // Tutorial
+    'tutorial.title': 'Comment ça marche',
+
     // Misc
     'lang.switchTo': 'EN',
     dateLocale: 'fr-FR',
@@ -161,35 +170,9 @@ export const translations = {
     'home.removeFavorite': 'Remove from favorites',
     'home.previewTitle': 'What it looks like',
     'home.previewSubtitle': 'Each slot changes color based on how many players joined.',
-
-    // Auth
-    'auth.signIn': 'Sign in',
-    'auth.signUp': 'Sign up',
-    'auth.signOut': 'Sign out',
-    'auth.myAccount': 'My account',
-    'auth.continueWithGoogle': 'Continue with Google',
-    'auth.or': 'or',
-    'auth.email': 'Email address',
-    'auth.password': 'Password',
-    'auth.nickname': 'Your name or nickname',
-    'auth.noAccount': "Don't have an account?",
-    'auth.haveAccount': 'Already have an account?',
-    'auth.forgotPassword': 'Forgot your password?',
-    'auth.resetSent': 'Password reset email sent.',
-    'auth.errorGeneric': 'Incorrect credentials or account already exists.',
-    'auth.titleSignIn': 'Sign in',
-    'auth.titleSignUp': 'Create an account',
-    'auth.submitSignIn': 'Sign in',
-    'auth.submitSignUp': 'Create my account',
-    'auth.submitting': 'One moment…',
-    'auth.accountBenefits':
-      'A free account syncs your favorites across devices and unlocks notifications when a slot fills up.',
-    'auth.continueWithoutAccount': 'Continue without an account',
-    'auth.notifyByEmail': 'Email me when a slot fills up',
-    'common.done': 'Done',
     'home.recentGroups': 'Recently viewed',
-    'invite.title': 'Invite friends',
-    'invite.subtitle': 'Share this code or link so others can join the group.',
+    'home.viewTutorial': '📸 View the picture tutorial',
+    'home.followUs': 'Follow us for news and video tutorials',
 
     // CreateGroup
     'createGroup.back': 'Back',
@@ -288,6 +271,41 @@ export const translations = {
 
     // Modal
     'modal.close': 'Close',
+
+    // Auth
+    'auth.signIn': 'Sign in',
+    'auth.signUp': 'Sign up',
+    'auth.signOut': 'Sign out',
+    'auth.myAccount': 'My account',
+    'auth.continueWithGoogle': 'Continue with Google',
+    'auth.or': 'or',
+    'auth.email': 'Email address',
+    'auth.password': 'Password',
+    'auth.nickname': 'Your name or nickname',
+    'auth.noAccount': "Don't have an account?",
+    'auth.haveAccount': 'Already have an account?',
+    'auth.forgotPassword': 'Forgot your password?',
+    'auth.resetSent': 'Password reset email sent.',
+    'auth.errorGeneric': 'Incorrect credentials or account already exists.',
+    'auth.titleSignIn': 'Sign in',
+    'auth.titleSignUp': 'Create an account',
+    'auth.submitSignIn': 'Sign in',
+    'auth.submitSignUp': 'Create my account',
+    'auth.submitting': 'One moment…',
+    'auth.accountBenefits':
+      'A free account syncs your favorites across devices and unlocks notifications when a slot fills up.',
+    'auth.continueWithoutAccount': 'Continue without an account',
+    'auth.notifyByEmail': 'Email me when a slot fills up',
+
+    // Common
+    'common.done': 'Done',
+
+    // Invite
+    'invite.title': 'Invite friends',
+    'invite.subtitle': 'Share this code or link so others can join the group.',
+
+    // Tutorial
+    'tutorial.title': 'How it works',
 
     // Misc
     'lang.switchTo': 'FR',

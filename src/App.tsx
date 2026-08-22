@@ -6,6 +6,7 @@ import { Home } from './pages/Home';
 import { CreateGroup } from './pages/CreateGroup';
 import { JoinGroup } from './pages/JoinGroup';
 import { GroupPage } from './pages/GroupPage';
+import { Tutorial } from './pages/Tutorial';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
               <Route path="/join" element={<JoinGroup />} />
               <Route path="/join/:code" element={<JoinGroup />} />
               <Route path="/g/:code" element={<GroupPage />} />
+              <Route path="/tutoriel" element={<Tutorial />} />
             </Routes>
           </GroupProvider>
         </BrowserRouter>

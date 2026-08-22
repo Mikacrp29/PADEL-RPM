@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { X, Clock } from 'lucide-react';
+import { X, Clock, Image as ImageIcon } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { LanguageToggle } from '../components/ui/LanguageToggle';
-import { CalendarPreview } from '../components/ui/CalendarPreview';
+import { SocialLinks } from '../components/ui/SocialLinks';
 import { AccountMenu } from '../components/auth/AccountMenu';
 import { useFavoriteGroups } from '../hooks/useFavoriteGroups';
 import { useRecentGroups } from '../hooks/useRecentGroups';
@@ -61,6 +61,14 @@ export function Home() {
               {t('home.joinGroup')}
             </Button>
           </div>
+
+          <button
+            onClick={() => navigate('/tutoriel')}
+            className="mx-auto mt-4 flex items-center gap-1.5 text-sm text-mist-400 underline decoration-dotted underline-offset-4 transition-colors hover:text-ball"
+          >
+            <ImageIcon size={14} />
+            {t('home.viewTutorial')}
+          </button>
 
           <div className="mt-10 text-left">
             {groups.length === 0 ? (
@@ -128,7 +136,7 @@ export function Home() {
             </div>
           )}
 
-          <CalendarPreview />
+          <SocialLinks className="mt-10" />
         </div>
       </div>
     </div>
