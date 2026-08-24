@@ -66,11 +66,17 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
     arg.view.calendar.unselect();
   };
 
-  // Single click on empty cell in month view: default to a 1h30 slot.
+  // A simple tap/click always creates a default 1h30 slot — in month view
+  // there's no time-of-day on the clicked cell, so it defaults to 19:00;
+  // in week/day view the exact time tapped is already known, so that's
+  // used directly. Previously this only handled month view, leaving
+  // week/day with no click-to-create at all (only drag-to-select, which
+  // isn't obvious or reliable as a touch gesture on a phone).
   const handleDateClick = (arg: DateClickArg) => {
-    if (!arg.view.type.startsWith('dayGrid')) return;
     const start = new Date(arg.date);
-    start.setHours(19, 0, 0, 0);
+    if (arg.view.type.startsWith('dayGrid')) {
+      start.setHours(19, 0, 0, 0);
+    }
     const end = new Date(start);
     end.setHours(start.getHours() + 1, start.getMinutes() + 30);
     onSelectRange(start, end);
