@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { trackEvent } from '../../lib/analytics';
 import type { Group } from '../../types';
 
 interface InviteModalProps {
@@ -20,6 +21,7 @@ export function InviteModal({ open, onClose, group }: InviteModalProps) {
     await navigator.clipboard.writeText(value);
     setCopied(kind);
     setTimeout(() => setCopied(null), 1500);
+    trackEvent('share_group', { group_code: group.inviteCode, method: kind });
   };
 
   return (

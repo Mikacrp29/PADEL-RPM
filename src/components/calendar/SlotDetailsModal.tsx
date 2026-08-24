@@ -7,6 +7,7 @@ import { StatusBadge } from '../ui/StatusBadge';
 import type { Slot } from '../../types';
 import { getSlotStatus } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { trackEvent, eventDateParams } from '../../lib/analytics';
 
 interface SlotDetailsModalProps {
   slot: Slot | null;
@@ -76,6 +77,13 @@ export function SlotDetailsModal({
       setError(t('slotDetails.errorDeleteFailed'));
       setBusy(false);
     }
+  };
+
+  const handleBookCourt = () => {
+    trackEvent('book_court', {
+      group_code: slot.groupId,
+      ...eventDateParams(slot.start.toDate()),
+    });
   };
 
   const dateLocale = language === 'en' ? 'en-GB' : 'fr-FR';
@@ -162,6 +170,7 @@ export function SlotDetailsModal({
           href={bookingUrl}
           target="_blank"
           rel="noreferrer"
+          onClick={handleBookCourt}
           className="mb-4 block rounded-xl bg-slot-ready/15 border border-slot-ready/40 px-4 py-3 text-center text-sm font-semibold text-mist-100 transition-colors hover:bg-slot-ready/25"
         >
           {t('slotDetails.bookCourt')}

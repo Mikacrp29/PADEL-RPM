@@ -14,6 +14,7 @@ import { CreateSlotModal } from '../components/calendar/CreateSlotModal';
 import { SlotDetailsModal } from '../components/calendar/SlotDetailsModal';
 import { createSlot, joinSlot, leaveSlot, deleteSlot } from '../firebase/slots';
 import { touchGroupMemberCount } from '../firebase/groups';
+import { trackEvent, eventDateParams } from '../lib/analytics';
 import type { Slot } from '../types';
 import { getSlotStatus } from '../types';
 import type { TranslationKey } from '../i18n/translations';
@@ -106,11 +107,32 @@ export function GroupPage() {
     await createSlot(group.id, start, end, nick, club, user?.uid);
     if (nick.trim() && nick.trim() !== nickname) setNickname(nick.trim());
     await touchGroupMemberCount(group.id).catch(() => {});
+    trackEvent('add_availability', { group_code: group.inviteCode, ...eventDateParams(start) });
   };
 
   const handleJoin = async (slot: Slot, nick: string, club: string) => {
+    // Captured before the write: this is the count the Firestore document
+    // has right now, so "was this the 3rd -> 4th player" is unambiguous
+    // and attributed to this one action only — never re-derived from the
+    // real-time listener, which every connected member also receives and
+    // would otherwise fire match_ready once per open tab in the group.
+    const wasThreeOfFour = slot.participants.length === 3;
+
     await joinSlot(group.id, slot.id, nick, club, user?.uid);
     setNickname(nick);
+
+    trackEvent('add_availability', {
+      group_code: group.inviteCode,
+      ...eventDateParams(slot.start.toDate()),
+    });
+
+    if (wasThreeOfFour) {
+      trackEvent('match_ready', {
+        group_code: group.inviteCode,
+        ...eventDateParams(slot.start.toDate()),
+        player_count: 4,
+      });
+    }
   };
 
   const handleLeave = async (slot: Slot, nick: string) => {
@@ -123,6 +145,7 @@ export function GroupPage() {
     // this step gets silently rejected by the security rules (this was the
     // bug: leaving the last player did neither).
     await leaveSlot(group.id, slot.id, participant);
+    trackEvent('remove_availability', { group_code: group.inviteCode });
     if (slot.participants.length === 1) {
       // That was the last participant — the slot is now empty, so remove
       // it too instead of leaving an orphaned empty entry on the calendar.

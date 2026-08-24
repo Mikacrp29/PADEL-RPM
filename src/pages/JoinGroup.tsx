@@ -7,6 +7,7 @@ import { LanguageToggle } from '../components/ui/LanguageToggle';
 import { useGroup } from '../contexts/GroupContext';
 import { useLocalIdentity } from '../hooks/useLocalIdentity';
 import { useLanguage } from '../contexts/LanguageContext';
+import { trackEvent } from '../lib/analytics';
 
 const CODE_PREFIX = 'PADEL-';
 
@@ -22,6 +23,7 @@ export function JoinGroup() {
     const group = await loadGroup(value);
     if (group) {
       setLastGroupCode(group.inviteCode);
+      trackEvent('join_group', { group_code: group.inviteCode });
       navigate(`/g/${group.inviteCode}`);
     }
   };

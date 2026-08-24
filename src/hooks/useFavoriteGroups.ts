@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { trackEvent } from '../lib/analytics';
 
 const KEY = 'padel:favoriteGroups';
 const MAX_GROUPS = 20;
@@ -15,8 +16,6 @@ function readStored(): FavoriteGroup[] {
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
   } catch {
-    // Corrupted JSON or localStorage unavailable — start from an empty list
-    // rather than throwing and breaking the home page.
     return [];
   }
 }
@@ -55,6 +54,7 @@ export function useFavoriteGroups() {
       writeStored(next);
       return next;
     });
+    trackEvent('favorite_group', { group_code: code });
   }, []);
 
   const removeGroup = useCallback((code: string) => {

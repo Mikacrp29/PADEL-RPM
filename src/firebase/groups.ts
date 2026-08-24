@@ -7,6 +7,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { db } from './config';
+import { trackEvent } from '../lib/analytics';
 import type { Group } from '../types';
 
 /**
@@ -42,6 +43,8 @@ export async function createGroup(name: string, creatorName: string): Promise<Gr
     memberCount: creatorName.trim() ? 1 : 0,
   };
   await setDoc(groupRef, groupData);
+
+  trackEvent('create_group', { group_code: inviteCode, group_name: groupData.name });
 
   return {
     id: inviteCode,
