@@ -65,9 +65,39 @@ export const SLOT_STATUS_LABEL_KEY: Record<SlotStatus, TranslationKey> = {
   ready: 'status.ready',
 };
 
+/** CSS custom properties — used anywhere a plain CSS color value is fine
+ * (e.g. the status dot in StatusBadge), which follows the app's dark theme
+ * automatically since these are defined once in index.css. */
 export const SLOT_STATUS_COLOR: Record<SlotStatus, string> = {
   empty: 'var(--color-slot-empty)',
   low: 'var(--color-slot-low)',
   mid: 'var(--color-slot-mid)',
   ready: 'var(--color-slot-ready)',
+};
+
+/**
+ * Plain hex mirror of the same colors above, for the one place (the
+ * calendar's event rendering) that needs to do JS math on the color — e.g.
+ * lightening it based on participant count. Keep in sync with the
+ * `--color-slot-*` custom properties in index.css if either ever changes.
+ */
+export const SLOT_STATUS_HEX: Record<SlotStatus, string> = {
+  empty: '#3a4d4f',
+  low: '#3d7ac9',
+  mid: '#d68a3a',
+  ready: '#4fbf6b',
+};
+
+/**
+ * The range of participant counts each status covers. Used to compute how
+ * "far into" its status a slot is (e.g. 1 vs 2 players are both "low", but
+ * 2 is further along) — currently only `low` spans more than one value, so
+ * it's the only status where the calendar shows a shade difference, but
+ * this stays generic in case the 4-player cap or bucket sizes ever change.
+ */
+export const SLOT_STATUS_RANGE: Record<SlotStatus, { min: number; max: number }> = {
+  empty: { min: 0, max: 0 },
+  low: { min: 1, max: 2 },
+  mid: { min: 3, max: 3 },
+  ready: { min: 4, max: 4 },
 };

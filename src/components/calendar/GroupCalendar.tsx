@@ -5,7 +5,8 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin, { type DateClickArg } from '@fullcalendar/interaction';
 import type { EventClickArg, DateSelectArg } from '@fullcalendar/core';
 import type { Slot } from '../../types';
-import { getSlotStatus, SLOT_STATUS_COLOR } from '../../types';
+import { getSlotStatus, SLOT_STATUS_HEX, SLOT_STATUS_RANGE } from '../../types';
+import { lighten } from '../../lib/color';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 function useIsMobile() {
@@ -44,16 +45,30 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
   const events = useMemo(
     () =>
       slots.map((slot) => {
-        const status = getSlotStatus(slot.participants.length);
+        const count = slot.participants.length;
+        const status = getSlotStatus(count);
+
+        // How far into its status range this slot is (0 = just entered the
+        // status, 1 = about to tip into the next one). Only `low` currently
+        // spans more than one value (1 or 2 players), so today this is the
+        // only status where two overlapping slots end up visually distinct
+        // — a 2/4 slot renders a touch lighter than a 1/4 one, both still
+        // unmistakably blue.
+        const { min, max } = SLOT_STATUS_RANGE[status];
+        const span = max - min;
+        const progress = span === 0 ? 0 : (count - min) / span;
+        const fillColor = lighten(SLOT_STATUS_HEX[status], progress * 0.28);
+
         return {
           id: slot.id,
-          title: `${slot.participants.length}/4 · ${slot.participants
-            .map((p) => p.name)
-            .join(', ')}`,
+          title: `${count}/4 · ${slot.participants.map((p) => p.name).join(', ')}`,
           start: slot.start.toDate(),
           end: slot.end.toDate(),
-          backgroundColor: SLOT_STATUS_COLOR[status],
-          borderColor: SLOT_STATUS_COLOR[status],
+          backgroundColor: fillColor,
+          // Border stays the pure status color regardless of count, so the
+          // status family (blue/orange/green) is still instantly readable
+          // even where the fill has been lightened.
+          borderColor: SLOT_STATUS_HEX[status],
           textColor: status === 'empty' ? '#eef5f4' : '#071a1a',
           extendedProps: { slot },
         };
