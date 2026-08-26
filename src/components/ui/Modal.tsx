@@ -31,7 +31,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
       />
       <div
         className={cn(
-          'relative w-full max-w-md rounded-2xl border border-court-600 bg-court-900 p-6 shadow-2xl animate-pop',
+          'relative w-full max-w-md rounded-2xl border border-court-600 bg-court-900 p-6 shadow-[0_24px_60px_-12px_rgba(7,26,26,0.65)] animate-pop',
           className
         )}
       >

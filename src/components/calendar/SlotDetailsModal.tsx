@@ -145,7 +145,7 @@ export function SlotDetailsModal({
             {slot.participants.map((p) => (
               <li
                 key={p.name}
-                className="flex items-center gap-2 rounded-lg bg-court-800 px-3 py-2 text-sm text-mist-100"
+                className="flex animate-fade-up items-center gap-2 rounded-lg bg-court-800 px-3 py-2 text-sm text-mist-100"
               >
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ball/20 text-xs font-semibold text-ball">
                   {p.name.charAt(0).toUpperCase()}

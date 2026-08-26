@@ -67,7 +67,7 @@ export function AccountMenu({ className = '' }: { className?: string }) {
       </button>
 
       {panelOpen && (
-        <div className="absolute right-0 top-full z-40 mt-2 w-72 animate-pop rounded-xl border border-court-600 bg-court-900 p-4 shadow-2xl">
+        <div className="absolute right-0 top-full z-40 mt-2 w-72 animate-pop rounded-xl border border-court-600 bg-court-900 p-4 shadow-[0_24px_60px_-12px_rgba(7,26,26,0.65)]">
           <p className="mb-1 text-xs text-mist-500">{t('auth.nickname')}</p>
           <Input
             value={nicknameDraft}

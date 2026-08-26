@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { X, Clock, Image as ImageIcon } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { PadelIcon } from '../components/ui/PadelIcon';
 import { LanguageToggle } from '../components/ui/LanguageToggle';
 import { SocialLinks } from '../components/ui/SocialLinks';
 import { AccountMenu } from '../components/auth/AccountMenu';
@@ -26,11 +27,15 @@ export function Home() {
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden">
       <div className="court-lines pointer-events-none absolute inset-0" />
-      <img
+            <img
         src="/logo-watermark.png"
         alt=""
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[140vh] w-[140vh] max-w-none -translate-x-1/2 -translate-y-1/2 select-none"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[90vh] w-[90vh] max-w-none -translate-x-1/2 -translate-y-1/2 select-none opacity-[0.05] sm:h-[140vh] sm:w-[140vh] sm:opacity-[0.07]"
+        style={{
+          maskImage: 'radial-gradient(circle at center, black 45%, transparent 75%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, black 45%, transparent 75%)',
+        }}
       />
 
       {/* Real top bar, in normal document flow — an absolutely positioned
@@ -72,7 +77,10 @@ export function Home() {
 
           <div className="mt-10 text-left">
             {groups.length === 0 ? (
-              <p className="text-center text-sm text-mist-500">{t('home.noFavorites')}</p>
+                            <div className="flex flex-col items-center gap-3 py-2 text-mist-500">
+                <PadelIcon size={36} className="text-court-600" />
+                <p className="text-center text-sm">{t('home.noFavorites')}</p>
+              </div>
             ) : (
               <>
                 <p className="mb-3 text-center text-sm font-medium text-mist-300">

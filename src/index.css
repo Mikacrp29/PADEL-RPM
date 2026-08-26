@@ -137,7 +137,24 @@ body {
   .fc-timegrid-slot { height: 2.1em; }
   .fc-col-header-cell-cushion { font-size: 0.8rem; }
   .fc-timegrid-slot-label-cushion { font-size: 0.7rem; }
-  .fc-event-title, .fc-event-time { font-size: 0.72rem; }
+    .fc-event-title, .fc-event-time { font-size: 0.72rem; }
+
+/* Slot micro-interaction: subtle lift + chartreuse glow on hover/tap. */
+.fc-event {
+  cursor: pointer;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, filter 0.15s ease-out;
+  transform-origin: center;
+}
+.fc-event:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 0 1px rgba(200, 241, 60, 0.5), 0 0 14px rgba(200, 241, 60, 0.35);
+  filter: brightness(1.06);
+  z-index: 5;
+}
+.fc-event:active {
+  transform: scale(0.98);
+  box-shadow: 0 0 0 1px rgba(200, 241, 60, 0.6), 0 0 8px rgba(200, 241, 60, 0.45);
+}
 }
 
 /* Custom scrollbar */
