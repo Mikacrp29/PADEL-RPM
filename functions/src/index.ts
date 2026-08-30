@@ -1,4 +1,6 @@
+
 import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { setGlobalOptions } from 'firebase-functions/v2';
 import { defineSecret } from 'firebase-functions/params';
 import { logger } from 'firebase-functions';
@@ -7,12 +9,17 @@ import * as admin from 'firebase-admin';
 admin.initializeApp();
 const db = admin.firestore();
 
-// Match the Firestore database region so the function runs close to the
-// data it reads/writes (lower latency, no cross-region cost).
+// Match the Firestore database region so functions run close to the data
+// they read/write (lower latency, no cross-region cost).
 setGlobalOptions({ region: 'europe-west1' });
 
 const resendApiKey = defineSecret('RESEND_API_KEY');
 const FROM_EMAIL = 'Padel Ensemble <notifications@padelensemble.com>';
+
+// Only this account can call getAdminStats — checked against the caller's
+// verified Firebase Auth token, not anything the client sends, so it can't
+// be spoofed by editing request data.
+const ADMIN_EMAIL = 'mikacrupi@gmail.com';
 
 interface StoredParticipant {
   name: string;
@@ -124,3 +131,40 @@ async function sendSlotFullEmail(
     throw new Error(`Resend API error ${response.status}: ${body}`);
   }
 }
+
+interface AdminStats {
+  groupCount: number;
+  accountCount: number;
+  slotCount: number;
+}
+
+/**
+ * Returns site-wide counts for the admin page. Restricted to ADMIN_EMAIL
+ * only — checked against `request.auth.token.email`, which Firebase Auth
+ * itself verifies server-side before this function ever runs, so it
+ * cannot be forged by a client claiming to be a different email.
+ *
+ * Uses the Admin SDK, which bypasses Firestore security rules entirely —
+ * this is intentional and the only way to read the protected `users`
+ * collection in aggregate without loosening its rules for everyone else.
+ *
+ * Uses Firestore's server-side count() aggregation instead of downloading
+ * every document, so this stays cheap even as the data grows.
+ */
+export const getAdminStats = onCall<void, Promise<AdminStats>>(async (request) => {
+  if (!request.auth || request.auth.token.email !== ADMIN_EMAIL) {
+    throw new HttpsError('permission-denied', 'Not authorized.');
+  }
+
+  const [groupsCount, usersCount, slotsCount] = await Promise.all([
+    db.collection('groups').count().get(),
+    db.collection('users').count().get(),
+    db.collectionGroup('slots').count().get(),
+  ]);
+
+  return {
+    groupCount: groupsCount.data().count,
+    accountCount: usersCount.data().count,
+    slotCount: slotsCount.data().count,
+  };
+});

@@ -1,0 +1,102 @@
+import { useEffect, useState } from 'react';
+import { httpsCallable } from 'firebase/functions';
+import { Users, Calendar, CalendarDays, ShieldAlert } from 'lucide-react';
+import { functions } from '../firebase/config';
+import { useAuth } from '../contexts/AuthContext';
+import { AuthModal } from '../components/auth/AuthModal';
+import { Button } from '../components/ui/Button';
+
+const ADMIN_EMAIL = 'mikacrupi@gmail.com';
+
+interface AdminStats {
+  groupCount: number;
+  accountCount: number;
+  slotCount: number;
+}
+
+export function AdminPage() {
+  const { user, loading: authLoading } = useAuth();
+  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [loadingStats, setLoadingStats] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+
+  const isAdmin = user?.email === ADMIN_EMAIL;
+
+  useEffect(() => {
+    document.title = 'Admin · Padel Ensemble';
+  }, []);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    setLoadingStats(true);
+    setError(null);
+    const getAdminStats = httpsCallable<void, AdminStats>(functions, 'getAdminStats');
+    getAdminStats()
+      .then((result) => setStats(result.data))
+      .catch(() => setError("Impossible de charger les statistiques. Réessaie."))
+      .finally(() => setLoadingStats(false));
+  }, [isAdmin]);
+
+  if (authLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-mist-300">
+        Chargement…
+      </div>
+    );
+  }
+
+  if (!user || !isAdmin) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
+        <ShieldAlert size={32} className="text-clay" />
+        <p className="text-mist-300">Cette page est réservée à l'administrateur.</p>
+        {!user && (
+          <>
+            <Button onClick={() => setAuthModalOpen(true)}>Se connecter</Button>
+            <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+          </>
+        )}
+      </div>
+    );
+  }
+
+  const cards = [
+    { icon: Users, label: 'Comptes créés', value: stats?.accountCount },
+    { icon: Calendar, label: 'Groupes créés', value: stats?.groupCount },
+    { icon: CalendarDays, label: 'Créneaux créés (total)', value: stats?.slotCount },
+  ];
+
+  return (
+    <div className="min-h-screen bg-court-950 px-6 py-16">
+      <div className="mx-auto max-w-3xl">
+        <h1 className="mb-8 font-display text-2xl font-bold text-mist-100">
+          Statistiques du site
+        </h1>
+
+        {error && <p className="mb-4 text-sm text-clay">{error}</p>}
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {cards.map(({ icon: Icon, label, value }) => (
+            <div
+              key={label}
+              className="rounded-2xl border border-court-700 bg-court-900 p-6"
+            >
+              <Icon size={20} className="mb-3 text-ball" />
+              <p className="font-display text-3xl font-bold text-mist-100">
+                {loadingStats ? '…' : (value ?? '—')}
+              </p>
+              <p className="mt-1 text-sm text-mist-500">{label}</p>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-8 text-xs text-mist-600">
+          "Créneaux créés (total)" compte tous les créneaux jamais créés dans tous les
+          groupes, y compris ceux passés depuis plus de 60 jours (non visibles dans les
+          calendriers, mais toujours comptés ici).
+        </p>
+      </div>
+    </div>
+  );
+}

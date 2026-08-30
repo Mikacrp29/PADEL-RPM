@@ -1,6 +1,7 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { getFunctions } from 'firebase/functions';
 
 // All values come from environment variables so the same build can be
 // deployed for different Firebase projects without touching the code.
@@ -18,4 +19,7 @@ const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+// Region must match where the Cloud Functions are deployed
+// (see functions/src/index.ts: setGlobalOptions({ region: 'europe-west1' })).
+export const functions = getFunctions(app, 'europe-west1');
 export default app;
