@@ -46,3 +46,5 @@ jobs:
       - name: Clean up credentials file
         if: always()
         run: rm -f /tmp/firebase-service-account.json
+
+        # Firebase Functions deployment
