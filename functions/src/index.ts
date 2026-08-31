@@ -1,4 +1,3 @@
-
 import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { setGlobalOptions } from 'firebase-functions/v2';
@@ -152,7 +151,8 @@ interface AdminStats {
  * every document, so this stays cheap even as the data grows.
  */
 export const getAdminStats = onCall<void, Promise<AdminStats>>(async (request) => {
-  if (!request.auth || request.auth.token.email !== ADMIN_EMAIL) {
+  const callerEmail = request.auth?.token.email?.trim().toLowerCase();
+  if (!request.auth || callerEmail !== ADMIN_EMAIL.toLowerCase()) {
     throw new HttpsError('permission-denied', 'Not authorized.');
   }
 

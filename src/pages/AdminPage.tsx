@@ -15,13 +15,13 @@ interface AdminStats {
 }
 
 export function AdminPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
-  const isAdmin = user?.email === ADMIN_EMAIL;
+  const isAdmin = user?.email?.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
   useEffect(() => {
     document.title = 'Admin · Padel Ensemble';
@@ -51,10 +51,21 @@ export function AdminPage() {
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
         <ShieldAlert size={32} className="text-clay" />
         <p className="text-mist-300">Cette page est réservée à l'administrateur.</p>
-        {!user && (
+
+        {!user ? (
           <>
             <Button onClick={() => setAuthModalOpen(true)}>Se connecter</Button>
             <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+          </>
+        ) : (
+          <>
+            <p className="text-xs text-mist-500">
+              Connecté en tant que <span className="text-mist-300">{user.email}</span> —
+              ce compte n'est pas autorisé.
+            </p>
+            <Button variant="secondary" onClick={() => signOut()}>
+              Se déconnecter pour changer de compte
+            </Button>
           </>
         )}
       </div>
