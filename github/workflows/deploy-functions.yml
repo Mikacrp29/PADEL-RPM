@@ -3,6 +3,7 @@ name: Deploy Firebase Functions
 # Only runs when something in functions/ (or this workflow itself) changes,
 # so a normal website commit never triggers a Firebase deploy.
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
