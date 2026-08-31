@@ -38,17 +38,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribe = subscribeToAuthChanges(async (nextUser) => {
       setUser(nextUser);
-      if (nextUser) {
-        const p = await ensureUserProfile(
-          nextUser.uid,
-          nextUser.email,
-          nextUser.displayName ?? ''
-        );
-        setProfile(p);
-      } else {
+      try {
+        if (nextUser) {
+          const p = await ensureUserProfile(
+            nextUser.uid,
+            nextUser.email,
+            nextUser.displayName ?? ''
+          );
+          setProfile(p);
+        } else {
+          setProfile(null);
+        }
+      } catch {
+        // If fetching/creating the Firestore profile fails (network hiccup,
+        // rules issue, etc.), the person is still authenticated — just
+        // without a profile yet. Previously this rejected promise skipped
+        // the setLoading(false) below entirely, leaving the whole app
+        // stuck showing "loading" forever on any screen that gates on it
+        // (e.g. the admin page never got to show its login button).
         setProfile(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
     return unsubscribe;
   }, []);
