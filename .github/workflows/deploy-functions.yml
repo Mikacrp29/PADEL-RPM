@@ -23,7 +23,7 @@ jobs:
 
       - name: Install function dependencies
         working-directory: functions
-        run: npm ci
+        run: npm install
 
       - name: Build functions
         working-directory: functions
