@@ -44,6 +44,11 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/firebase-service-account.json
         run: npx firebase-tools deploy --only functions --project padel-rpm --non-interactive
 
+      - name: Set Firebase Functions artifacts cleanup policy
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/firebase-service-account.json
+        run: npx firebase-tools functions:artifacts:setpolicy --location europe-west1 --project padel-rpm --non-interactive
+
       - name: Clean up credentials file
         if: always()
         run: rm -f /tmp/firebase-service-account.json
