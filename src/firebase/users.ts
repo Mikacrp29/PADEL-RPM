@@ -1,5 +1,6 @@
 import { doc, getDoc, setDoc, serverTimestamp, type Timestamp } from 'firebase/firestore';
 import { db } from './config';
+import type { FavoriteGroup } from '../types';
 
 export interface UserProfile {
   uid: string;
@@ -8,6 +9,7 @@ export interface UserProfile {
   createdAt: Timestamp | null;
   notifyByEmail: boolean;
   notifyByPush: boolean;
+  favorites: FavoriteGroup[];
 }
 
 function profileRef(uid: string) {
@@ -17,7 +19,9 @@ function profileRef(uid: string) {
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   const snap = await getDoc(profileRef(uid));
   if (!snap.exists()) return null;
-  return snap.data() as UserProfile;
+  const data = snap.data() as UserProfile;
+  // Defensive default for profiles created before `favorites` existed.
+  return { ...data, favorites: data.favorites ?? [] };
 }
 
 /**
@@ -40,6 +44,7 @@ export async function ensureUserProfile(
     createdAt: serverTimestamp(),
     notifyByEmail: false,
     notifyByPush: false,
+    favorites: [] as FavoriteGroup[],
   };
   await setDoc(profileRef(uid), profile);
   return { ...profile, createdAt: null };
@@ -54,4 +59,9 @@ export async function updateNotificationPrefs(
   prefs: Partial<Pick<UserProfile, 'notifyByEmail' | 'notifyByPush'>>
 ): Promise<void> {
   await setDoc(profileRef(uid), prefs, { merge: true });
+}
+
+/** Overwrites the account's favorite groups list with the given array. */
+export async function updateUserFavorites(uid: string, favorites: FavoriteGroup[]): Promise<void> {
+  await setDoc(profileRef(uid), { favorites }, { merge: true });
 }

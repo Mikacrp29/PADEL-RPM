@@ -49,6 +49,17 @@ export interface LocalIdentity {
   lastGroupCode: string | null;
 }
 
+/**
+ * A group pinned as a favorite. Shared shape used both for the
+ * localStorage-backed list (logged out) and the Firestore-backed list on
+ * the user's profile (logged in) — same type either way, only the storage
+ * location changes.
+ */
+export interface FavoriteGroup {
+  code: string;
+  name: string;
+}
+
 export type SlotStatus = 'empty' | 'low' | 'mid' | 'ready';
 
 export function getSlotStatus(count: number): SlotStatus {

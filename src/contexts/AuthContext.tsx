@@ -12,8 +12,10 @@ import {
   ensureUserProfile,
   updateUserNickname,
   updateNotificationPrefs,
+  updateUserFavorites,
   type UserProfile,
 } from '../firebase/users';
+import type { FavoriteGroup } from '../types';
 
 interface AuthContextValue {
   user: User | null;
@@ -26,6 +28,7 @@ interface AuthContextValue {
   signOut: () => Promise<void>;
   setNickname: (nickname: string) => Promise<void>;
   setNotifyByEmail: (value: boolean) => Promise<void>;
+  setFavorites: (favorites: FavoriteGroup[]) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -50,12 +53,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setProfile(null);
         }
       } catch {
-        // If fetching/creating the Firestore profile fails (network hiccup,
-        // rules issue, etc.), the person is still authenticated — just
-        // without a profile yet. Previously this rejected promise skipped
-        // the setLoading(false) below entirely, leaving the whole app
-        // stuck showing "loading" forever on any screen that gates on it
-        // (e.g. the admin page never got to show its login button).
         setProfile(null);
       } finally {
         setLoading(false);
@@ -102,6 +99,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [user]
   );
 
+  const setFavorites = useCallback(
+    async (favorites: FavoriteGroup[]) => {
+      if (!user) return;
+      await updateUserFavorites(user.uid, favorites);
+      setProfile((prev) => (prev ? { ...prev, favorites } : prev));
+    },
+    [user]
+  );
+
   return (
     <AuthContext.Provider
       value={{
@@ -115,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signOut,
         setNickname,
         setNotifyByEmail,
+        setFavorites,
       }}
     >
       {children}
