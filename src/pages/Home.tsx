@@ -28,7 +28,7 @@ export function Home() {
     <div className="relative flex min-h-screen flex-col overflow-hidden">
       <div className="court-lines pointer-events-none absolute inset-0" />
             <img
-        src="/logo-watermark.png"
+        src="/logo-watermark.webp"
         alt=""
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-1/2 h-[90vh] w-[90vh] max-w-none -translate-x-1/2 -translate-y-1/2 select-none opacity-[0.05] sm:h-[140vh] sm:w-[140vh] sm:opacity-[0.07]"

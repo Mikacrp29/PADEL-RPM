@@ -159,11 +159,15 @@ export function GroupPage() {
 
   return (
     <div className="relative min-h-screen pb-16">
-      <img
-        src="/logo-watermark.png"
+           <img
+        src="/logo-watermark.webp"
         alt=""
         aria-hidden
-        className="pointer-events-none fixed left-1/2 top-1/2 h-[120vh] w-[120vh] max-w-none -translate-x-1/2 -translate-y-1/2 select-none"
+        className="pointer-events-none fixed left-1/2 top-1/2 h-[80vh] w-[80vh] max-w-none -translate-x-1/2 -translate-y-1/2 select-none opacity-[0.04] sm:h-[120vh] sm:w-[120vh] sm:opacity-[0.06]"
+        style={{
+          maskImage: 'radial-gradient(circle at center, black 45%, transparent 75%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, black 45%, transparent 75%)',
+        }}
       />
       <Navbar group={group} nickname={nickname} onNicknameChange={setNickname} />
 

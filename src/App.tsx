@@ -1,13 +1,14 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import { GroupProvider } from './contexts/GroupContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { Home } from './pages/Home';
-import { CreateGroup } from './pages/CreateGroup';
-import { JoinGroup } from './pages/JoinGroup';
-import { GroupPage } from './pages/GroupPage';
-import { Tutorial } from './pages/Tutorial';
-import { AdminPage } from './pages/AdminPage';
+
+const CreateGroup = lazy(() => import('./pages/CreateGroup').then((m) => ({ default: m.CreateGroup })));
+const JoinGroup = lazy(() => import('./pages/JoinGroup').then((m) => ({ default: m.JoinGroup })));
+const GroupPage = lazy(() => import('./pages/GroupPage').then((m) => ({ default: m.GroupPage })));
+const Tutorial = lazy(() => import('./pages/Tutorial').then((m) => ({ default: m.Tutorial })));
 
 function App() {
   return (
@@ -15,15 +16,16 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <GroupProvider>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/create" element={<CreateGroup />} />
-              <Route path="/join" element={<JoinGroup />} />
-              <Route path="/join/:code" element={<JoinGroup />} />
-              <Route path="/g/:code" element={<GroupPage />} />
-              <Route path="/tutoriel" element={<Tutorial />} />
-              <Route path="/admin" element={<AdminPage />} />
-            </Routes>
+            <Suspense fallback={null}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/create" element={<CreateGroup />} />
+                <Route path="/join" element={<JoinGroup />} />
+                <Route path="/join/:code" element={<JoinGroup />} />
+                <Route path="/g/:code" element={<GroupPage />} />
+                <Route path="/tutoriel" element={<Tutorial />} />
+              </Routes>
+            </Suspense>
           </GroupProvider>
         </BrowserRouter>
       </AuthProvider>
