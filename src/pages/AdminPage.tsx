@@ -5,13 +5,22 @@ import { functions } from '../firebase/config';
 import { useAuth } from '../contexts/AuthContext';
 import { AuthModal } from '../components/auth/AuthModal';
 import { Button } from '../components/ui/Button';
+import { MiniBarChart } from '../components/admin/MiniBarChart';
 
 const ADMIN_EMAIL = 'mikacrupi@gmail.com';
+
+interface WeekBucket {
+  weekStart: string;
+  groups: number;
+  accounts: number;
+  slots: number;
+}
 
 interface AdminStats {
   groupCount: number;
   accountCount: number;
   slotCount: number;
+  weeklySeries: WeekBucket[];
 }
 
 export function AdminPage() {
@@ -34,7 +43,10 @@ export function AdminPage() {
     const getAdminStats = httpsCallable<void, AdminStats>(functions, 'getAdminStats');
     getAdminStats()
       .then((result) => setStats(result.data))
-      .catch(() => setError("Impossible de charger les statistiques. Réessaie."))
+      .catch((err) => {
+        const code = (err as { code?: string })?.code ?? 'unknown';
+        setError(`Impossible de charger les statistiques (${code}). Réessaie.`);
+      })
       .finally(() => setLoadingStats(false));
   }, [isAdmin]);
 
@@ -78,6 +90,8 @@ export function AdminPage() {
     { icon: CalendarDays, label: 'Créneaux créés (total)', value: stats?.slotCount },
   ];
 
+  const series = stats?.weeklySeries ?? [];
+
   return (
     <div className="min-h-screen bg-court-950 px-6 py-16">
       <div className="mx-auto max-w-3xl">
@@ -87,12 +101,9 @@ export function AdminPage() {
 
         {error && <p className="mb-4 text-sm text-clay">{error}</p>}
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {cards.map(({ icon: Icon, label, value }) => (
-            <div
-              key={label}
-              className="rounded-2xl border border-court-700 bg-court-900 p-6"
-            >
+            <div key={label} className="rounded-2xl border border-court-700 bg-court-900 p-6">
               <Icon size={20} className="mb-3 text-ball" />
               <p className="font-display text-3xl font-bold text-mist-100">
                 {loadingStats ? '…' : (value ?? '—')}
@@ -101,6 +112,36 @@ export function AdminPage() {
             </div>
           ))}
         </div>
+
+        {series.length > 0 && (
+          <>
+            <h2 className="mb-1 font-display text-lg font-semibold text-mist-100">
+              Activité des 12 dernières semaines
+            </h2>
+            <p className="mb-4 text-xs text-mist-500">
+              Chaque barre = le nombre créé <span className="text-mist-300">cette semaine-là</span>{' '}
+              précisément (pas un total cumulé) — une barre à zéro veut dire aucune activité
+              cette semaine-là. Passe la souris sur une barre pour voir le détail.
+            </p>
+            <div className="space-y-4">
+              <MiniBarChart
+                label="Comptes créés / semaine"
+                color="#c8f13c"
+                data={series.map((w) => ({ weekStart: w.weekStart, value: w.accounts }))}
+              />
+              <MiniBarChart
+                label="Groupes créés / semaine"
+                color="#3d7ac9"
+                data={series.map((w) => ({ weekStart: w.weekStart, value: w.groups }))}
+              />
+              <MiniBarChart
+                label="Créneaux créés / semaine"
+                color="#4fbf6b"
+                data={series.map((w) => ({ weekStart: w.weekStart, value: w.slots }))}
+              />
+            </div>
+          </>
+        )}
 
         <p className="mt-8 text-xs text-mist-600">
           "Créneaux créés (total)" compte tous les créneaux jamais créés dans tous les

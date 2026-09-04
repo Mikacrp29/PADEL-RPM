@@ -131,24 +131,82 @@ async function sendSlotFullEmail(
   }
 }
 
+interface WeekBucket {
+  weekStart: string; // ISO date (YYYY-MM-DD), Monday of that week
+  groups: number;
+  accounts: number;
+  slots: number;
+}
+
 interface AdminStats {
   groupCount: number;
   accountCount: number;
   slotCount: number;
+  weeklySeries: WeekBucket[];
+}
+
+const TREND_WEEKS = 12;
+
+function startOfWeek(d: Date): Date {
+  const date = new Date(d);
+  date.setHours(0, 0, 0, 0);
+  const day = (date.getDay() + 6) % 7; // Monday = 0
+  date.setDate(date.getDate() - day);
+  return date;
+}
+
+function buildWeekBucketStarts(weeks: number): Date[] {
+  const currentWeekStart = startOfWeek(new Date());
+  const starts: Date[] = [];
+  for (let i = weeks - 1; i >= 0; i--) {
+    const d = new Date(currentWeekStart);
+    d.setDate(d.getDate() - i * 7);
+    starts.push(d);
+  }
+  return starts;
+}
+
+function extractCreatedDates(
+  snap: FirebaseFirestore.QuerySnapshot
+): Date[] {
+  return snap.docs
+    .map((d) => d.data().createdAt as FirebaseFirestore.Timestamp | undefined)
+    .filter((t): t is FirebaseFirestore.Timestamp => !!t)
+    .map((t) => t.toDate());
+}
+
+function countPerWeek(dates: Date[], bucketStarts: Date[]): number[] {
+  const counts = new Array(bucketStarts.length).fill(0) as number[];
+  const bucketTimes = bucketStarts.map((d) => d.getTime());
+  for (const date of dates) {
+    const weekTime = startOfWeek(date).getTime();
+    const idx = bucketTimes.indexOf(weekTime);
+    // Dates older than the tracked window are intentionally dropped —
+    // this trend is about recent activity, not full history (that's what
+    // the totals above are for).
+    if (idx >= 0) counts[idx]++;
+  }
+  return counts;
 }
 
 /**
- * Returns site-wide counts for the admin page. Restricted to ADMIN_EMAIL
- * only — checked against `request.auth.token.email`, which Firebase Auth
- * itself verifies server-side before this function ever runs, so it
- * cannot be forged by a client claiming to be a different email.
+ * Returns site-wide counts (and a 12-week activity trend) for the admin
+ * page. Restricted to ADMIN_EMAIL only — checked against
+ * `request.auth.token.email`, which Firebase Auth itself verifies
+ * server-side before this function ever runs, so it cannot be forged by a
+ * client claiming to be a different email.
  *
  * Uses the Admin SDK, which bypasses Firestore security rules entirely —
  * this is intentional and the only way to read the protected `users`
  * collection in aggregate without loosening its rules for everyone else.
  *
- * Uses Firestore's server-side count() aggregation instead of downloading
- * every document, so this stays cheap even as the data grows.
+ * Note on cost/scale: computing the weekly trend requires reading every
+ * group/user/slot document once (to read their `createdAt`), rather than
+ * using cheaper count() aggregations — necessary since aggregation queries
+ * can't group by date. Fine at today's scale; if the slots collection
+ * grows into the tens of thousands, this should move to a scheduled
+ * function that maintains a small precomputed stats document instead of
+ * reading everything on every admin page load.
  */
 export const getAdminStats = onCall<void, Promise<AdminStats>>(async (request) => {
   const callerEmail = request.auth?.token.email?.trim().toLowerCase();
@@ -156,15 +214,28 @@ export const getAdminStats = onCall<void, Promise<AdminStats>>(async (request) =
     throw new HttpsError('permission-denied', 'Not authorized.');
   }
 
-  const [groupsCount, usersCount, slotsCount] = await Promise.all([
-    db.collection('groups').count().get(),
-    db.collection('users').count().get(),
-    db.collectionGroup('slots').count().get(),
+  const [groupsSnap, usersSnap, slotsSnap] = await Promise.all([
+    db.collection('groups').select('createdAt').get(),
+    db.collection('users').select('createdAt').get(),
+    db.collectionGroup('slots').select('createdAt').get(),
   ]);
 
+  const bucketStarts = buildWeekBucketStarts(TREND_WEEKS);
+  const groupCounts = countPerWeek(extractCreatedDates(groupsSnap), bucketStarts);
+  const accountCounts = countPerWeek(extractCreatedDates(usersSnap), bucketStarts);
+  const slotCounts = countPerWeek(extractCreatedDates(slotsSnap), bucketStarts);
+
+  const weeklySeries: WeekBucket[] = bucketStarts.map((d, i) => ({
+    weekStart: d.toISOString().slice(0, 10),
+    groups: groupCounts[i],
+    accounts: accountCounts[i],
+    slots: slotCounts[i],
+  }));
+
   return {
-    groupCount: groupsCount.data().count,
-    accountCount: usersCount.data().count,
-    slotCount: slotsCount.data().count,
+    groupCount: groupsSnap.size,
+    accountCount: usersSnap.size,
+    slotCount: slotsSnap.size,
+    weeklySeries,
   };
 });
