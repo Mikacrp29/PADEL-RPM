@@ -164,31 +164,42 @@ export function SlotDetailsModal({
         )}
       </div>
 
-           {BOOKING_SITES.length > 0 && (
-        <div className="mb-4 flex gap-2">
-          <select
-            value={selectedBookingUrl}
-            onChange={(e) => setSelectedBookingUrl(e.target.value)}
-            className="flex-1 cursor-pointer appearance-none rounded-xl border border-slot-ready/40 bg-slot-ready/15 px-4 py-3 text-sm font-semibold text-mist-100 transition-colors hover:bg-slot-ready/25"
-          >
-            <option value="" disabled>
-              {t('slotDetails.reservation')}
-            </option>
-            {BOOKING_SITES.map((site) => (
-              <option key={site.url} value={site.url}>
-                {site.label}
-              </option>
-            ))}
-          </select>
-          <Button
-            variant="primary"
-            disabled={!selectedBookingUrl}
-            onClick={() => handleBooking(selectedBookingUrl)}
-          >
-            {t('slotDetails.go')}
-          </Button>
-        </div>
-      )}
+          {BOOKING_SITES.length > 0 && (
+  <div className="mb-4">
+    <div className="flex gap-2">
+      <select
+        value={selectedBookingUrl}
+        onChange={(e) => setSelectedBookingUrl(e.target.value)}
+        className={`flex-1 cursor-pointer appearance-none rounded-xl border px-4 py-3 text-sm font-semibold transition-colors ${
+          selectedBookingUrl
+            ? 'border-slot-ready/40 bg-slot-ready/15 text-mist-100 hover:bg-slot-ready/25'
+            : 'border-mist-500/40 bg-court-800 text-mist-300'
+        }`}
+      >
+        <option value="" disabled>
+          {t('slotDetails.reservationPlaceholder')}
+        </option>
+        {BOOKING_SITES.map((site) => (
+          <option key={site.url} value={site.url}>
+            {site.label}
+          </option>
+        ))}
+      </select>
+      <Button
+        variant="primary"
+        disabled={!selectedBookingUrl}
+        onClick={() => handleBooking(selectedBookingUrl)}
+      >
+        {t('slotDetails.go')}
+      </Button>
+    </div>
+    {!selectedBookingUrl && (
+      <p className="mt-1.5 text-xs text-mist-500">
+        {t('slotDetails.reservationHint')}
+      </p>
+    )}
+  </div>
+)}
 
       <div className="space-y-3">
         <Input
