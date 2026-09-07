@@ -32,6 +32,7 @@ export function SlotDetailsModal({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [selectedBookingUrl, setSelectedBookingUrl] = useState('');
 
   if (!slot) return null;
 
@@ -163,16 +164,12 @@ export function SlotDetailsModal({
         )}
       </div>
 
-      {BOOKING_SITES.length > 0 && (
-        <div className="relative mb-4">
+           {BOOKING_SITES.length > 0 && (
+        <div className="mb-4 flex gap-2">
           <select
-            defaultValue=""
-            onChange={(e) => {
-              const site = BOOKING_SITES.find((s) => s.url === e.target.value);
-              if (site) handleBooking(site.url);
-              e.target.value = '';
-            }}
-            className="w-full cursor-pointer appearance-none rounded-xl border border-slot-ready/40 bg-slot-ready/15 px-4 py-3 text-center text-sm font-semibold text-mist-100 transition-colors hover:bg-slot-ready/25"
+            value={selectedBookingUrl}
+            onChange={(e) => setSelectedBookingUrl(e.target.value)}
+            className="flex-1 cursor-pointer appearance-none rounded-xl border border-slot-ready/40 bg-slot-ready/15 px-4 py-3 text-sm font-semibold text-mist-100 transition-colors hover:bg-slot-ready/25"
           >
             <option value="" disabled>
               {t('slotDetails.reservation')}
@@ -183,6 +180,13 @@ export function SlotDetailsModal({
               </option>
             ))}
           </select>
+          <Button
+            variant="primary"
+            disabled={!selectedBookingUrl}
+            onClick={() => handleBooking(selectedBookingUrl)}
+          >
+            {t('slotDetails.go')}
+          </Button>
         </div>
       )}
 
