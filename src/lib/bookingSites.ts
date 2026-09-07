@@ -9,5 +9,5 @@ export interface BookingSite {
  * apparaître dans le menu déroulant "Réservation" partout dans l'app.
  */
 export const BOOKING_SITES: BookingSite[] = [
-  { label: 'Playtomic', url: 'https://playtomic.com/' },
+  { label: 'Playtomic', url: 'https://app.playtomic.com/' },
 ];
