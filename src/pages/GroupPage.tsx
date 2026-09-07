@@ -226,7 +226,6 @@ export function GroupPage() {
         slot={selectedSlot}
         onClose={() => setSelectedSlot(null)}
         defaultNickname={nickname}
-        bookingUrl={group.bookingUrl}
         onJoin={handleJoin}
         onLeave={handleLeave}
         onDelete={handleDelete}

@@ -5,15 +5,14 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { StatusBadge } from '../ui/StatusBadge';
 import type { Slot } from '../../types';
-import { getSlotStatus } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { trackEvent, eventDateParams } from '../../lib/analytics';
+import { BOOKING_SITES } from '../../lib/bookingSites';
 
 interface SlotDetailsModalProps {
   slot: Slot | null;
   onClose: () => void;
   defaultNickname: string;
-  bookingUrl?: string;
   onJoin: (slot: Slot, nickname: string, club: string) => Promise<void>;
   onLeave: (slot: Slot, nickname: string) => Promise<void>;
   onDelete: (slot: Slot) => Promise<void>;
@@ -23,7 +22,6 @@ export function SlotDetailsModal({
   slot,
   onClose,
   defaultNickname,
-  bookingUrl,
   onJoin,
   onLeave,
   onDelete,
@@ -40,7 +38,6 @@ export function SlotDetailsModal({
   const alreadyIn = slot.participants.some(
     (p) => p.name.toLowerCase() === nickname.trim().toLowerCase()
   );
-  const status = getSlotStatus(slot.participants.length);
 
   const handleClick = async () => {
     if (!nickname.trim()) {
@@ -79,11 +76,12 @@ export function SlotDetailsModal({
     }
   };
 
-  const handleBookCourt = () => {
+  const handleBooking = (url: string) => {
     trackEvent('book_court', {
       group_code: slot.groupId,
       ...eventDateParams(slot.start.toDate()),
     });
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const dateLocale = language === 'en' ? 'en-GB' : 'fr-FR';
@@ -165,16 +163,27 @@ export function SlotDetailsModal({
         )}
       </div>
 
-      {status === 'ready' && bookingUrl && (
-        <a
-          href={bookingUrl}
-          target="_blank"
-          rel="noreferrer"
-          onClick={handleBookCourt}
-          className="mb-4 block rounded-xl bg-slot-ready/15 border border-slot-ready/40 px-4 py-3 text-center text-sm font-semibold text-mist-100 transition-colors hover:bg-slot-ready/25"
-        >
-          {t('slotDetails.bookCourt')}
-        </a>
+      {BOOKING_SITES.length > 0 && (
+        <div className="relative mb-4">
+          <select
+            defaultValue=""
+            onChange={(e) => {
+              const site = BOOKING_SITES.find((s) => s.url === e.target.value);
+              if (site) handleBooking(site.url);
+              e.target.value = '';
+            }}
+            className="w-full cursor-pointer appearance-none rounded-xl border border-slot-ready/40 bg-slot-ready/15 px-4 py-3 text-center text-sm font-semibold text-mist-100 transition-colors hover:bg-slot-ready/25"
+          >
+            <option value="" disabled>
+              {t('slotDetails.reservation')}
+            </option>
+            {BOOKING_SITES.map((site) => (
+              <option key={site.url} value={site.url}>
+                {site.label}
+              </option>
+            ))}
+          </select>
+        </div>
       )}
 
       <div className="space-y-3">
