@@ -15,7 +15,7 @@ export const POSTER_HEIGHT = 1536;
 
 // Empty court area in poster-bg.jpg, hand-picked to sit clear of the net
 // (left), the paddle/ball (bottom), and the title (top). Square, centered.
-const QR_BOX = { x: 322, y: 510, size: 380 };
+const QR_BOX = { x: 282, y: 505, size: 460 };
 
 // Top-right area of poster-bg.jpg, level with the "Padel Ensemble" logo.
 const NAME_PILL = { top: 96, bottom: 200, right: 64, maxWidth: 460 };
