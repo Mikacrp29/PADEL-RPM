@@ -152,6 +152,22 @@ export const translations = {
     'invite.title': 'Inviter des amis',
     'invite.subtitle': "Partage ce code ou ce lien pour que d'autres rejoignent le groupe.",
 
+    // Poster
+    'poster.openButton': "Voir l'affiche QR code",
+    'poster.title': 'Affiche du groupe',
+    'poster.subtitle': 'Une affiche prête à imprimer ou partager, avec le QR code de votre groupe.',
+    'poster.enlarge': 'Agrandir',
+    'poster.download': 'Télécharger',
+    'poster.share': 'Partager',
+    'poster.print': 'Imprimer',
+    'poster.titleLine1': 'Organisez vos',
+    'poster.titleLine2': 'matchs de padel',
+    'poster.scanAndJoin': 'Scannez et rejoignez',
+    'poster.step1': 'Rejoignez le groupe',
+    'poster.step2': 'Indiquez vos disponibilités',
+    'poster.step3': 'Jouez !',
+    'poster.shareText': 'Rejoins le groupe {name} sur Padel Ensemble !',
+
     // Tutorial
     'tutorial.title': 'Comment ça marche',
 
@@ -309,6 +325,22 @@ export const translations = {
     // Invite
     'invite.title': 'Invite friends',
     'invite.subtitle': 'Share this code or link so others can join the group.',
+
+    // Poster
+    'poster.openButton': 'View QR code poster',
+    'poster.title': 'Group poster',
+    'poster.subtitle': 'A ready-to-print, ready-to-share poster with your group QR code.',
+    'poster.enlarge': 'Enlarge',
+    'poster.download': 'Download',
+    'poster.share': 'Share',
+    'poster.print': 'Print',
+    'poster.titleLine1': 'Organize your',
+    'poster.titleLine2': 'padel matches',
+    'poster.scanAndJoin': 'Scan and join',
+    'poster.step1': 'Join the group',
+    'poster.step2': 'Add your availability',
+    'poster.step3': 'Play!',
+    'poster.shareText': 'Join the {name} group on Padel Ensemble!',
 
     // Tutorial
     'tutorial.title': 'How it works',

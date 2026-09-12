@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy, QrCode } from 'lucide-react';
 import { Modal } from '../ui/Modal';
+import { PosterModal } from './PosterModal';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { trackEvent } from '../../lib/analytics';
 import type { Group } from '../../types';
@@ -14,6 +15,7 @@ interface InviteModalProps {
 export function InviteModal({ open, onClose, group }: InviteModalProps) {
   const { t } = useLanguage();
   const [copied, setCopied] = useState<'code' | 'link' | null>(null);
+  const [posterOpen, setPosterOpen] = useState(false);
 
   const inviteLink = `${window.location.origin}/join/${group.inviteCode}`;
 
@@ -25,6 +27,7 @@ export function InviteModal({ open, onClose, group }: InviteModalProps) {
   };
 
   return (
+    <>
     <Modal open={open} onClose={onClose} title={t('invite.title')}>
       <p className="mb-5 text-sm text-mist-300">{t('invite.subtitle')}</p>
 
@@ -49,6 +52,17 @@ export function InviteModal({ open, onClose, group }: InviteModalProps) {
         <span className="truncate">{inviteLink}</span>
         {copied === 'link' ? <Check size={18} className="shrink-0" /> : <Copy size={18} className="shrink-0" />}
       </button>
+
+      <button
+        onClick={() => setPosterOpen(true)}
+        className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-ball/40 bg-ball/10 px-4 py-3 text-sm font-semibold text-ball transition-colors hover:bg-ball/15"
+      >
+        <QrCode size={18} />
+        {t('poster.openButton')}
+      </button>
     </Modal>
+
+    <PosterModal open={posterOpen} onClose={() => setPosterOpen(false)} group={group} />
+    </>
   );
 }
