@@ -16,22 +16,29 @@ export function PosterModal({ open, onClose, group }: PosterModalProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fullscreen, setFullscreen] = useState(false);
   const [ready, setReady] = useState(false);
+  const [posterDataUrl, setPosterDataUrl] = useState<string | null>(null);
 
   const inviteUrl = `${window.location.origin}/join/${group.inviteCode}`;
 
   useEffect(() => {
     if (!open || !canvasRef.current) return;
     setReady(false);
-    drawGroupPoster(canvasRef.current, { groupName: group.name, inviteUrl }).then(() =>
-      setReady(true)
-    );
+    setPosterDataUrl(null);
+    drawGroupPoster(canvasRef.current, { groupName: group.name, inviteUrl }).then(() => {
+      if (!canvasRef.current) return;
+      setPosterDataUrl(canvasRef.current.toDataURL('image/png'));
+      setReady(true);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, group.name, inviteUrl]);
 
   const filename = `padel-ensemble-${group.inviteCode.toLowerCase()}.png`;
 
-  const getBlob = (): Promise<Blob | null> =>
-    new Promise((resolve) => canvasRef.current?.toBlob((b) => resolve(b), 'image/png'));
+  const getBlob = async (): Promise<Blob | null> => {
+    if (!posterDataUrl) return null;
+    const res = await fetch(posterDataUrl);
+    return res.blob();
+  };
 
   const handleDownload = async () => {
     const blob = await getBlob();
@@ -61,32 +68,39 @@ export function PosterModal({ open, onClose, group }: PosterModalProps) {
   };
 
   const handlePrint = () => {
-    const dataUrl = canvasRef.current?.toDataURL('image/png');
-    if (!dataUrl) return;
+    if (!posterDataUrl) return;
     const win = window.open('', '_blank');
     if (!win) return;
     win.document.write(
-      `<html><head><title>${group.name}</title></head><body style="margin:0"><img src="${dataUrl}" style="width:100%" onload="window.print()" /></body></html>`
+      `<html><head><title>${group.name}</title></head><body style="margin:0"><img src="${posterDataUrl}" style="width:100%" onload="window.print()" /></body></html>`
     );
     win.document.close();
   };
 
   return (
     <>
+      {/* Hidden canvas: only used as an offscreen render target. It stays
+          mounted for as long as the poster modal is open, regardless of
+          fullscreen state, so it's never destroyed mid-flow. */}
+      {open && (
+        <canvas
+          ref={canvasRef}
+          width={POSTER_WIDTH}
+          height={POSTER_HEIGHT}
+          style={{ display: 'none' }}
+        />
+      )}
+
       <Modal open={open && !fullscreen} onClose={onClose} title={t('poster.title')}>
         <p className="mb-4 text-sm text-mist-300">{t('poster.subtitle')}</p>
 
         <button
           onClick={() => setFullscreen(true)}
-          className="group relative mx-auto block w-full max-w-[220px] overflow-hidden rounded-xl border border-court-600"
+          disabled={!ready}
+          className="group relative mx-auto block w-full max-w-[220px] overflow-hidden rounded-xl border border-court-600 disabled:opacity-50"
           aria-label={t('poster.enlarge')}
         >
-          <canvas
-            ref={canvasRef}
-            width={POSTER_WIDTH}
-            height={POSTER_HEIGHT}
-            className="block w-full"
-          />
+          {posterDataUrl && <img src={posterDataUrl} alt={group.name} className="block w-full" />}
           <div className="absolute inset-0 flex items-center justify-center bg-court-950/0 opacity-0 transition-opacity group-hover:bg-court-950/40 group-hover:opacity-100">
             <Maximize2 className="text-mist-100" size={28} />
           </div>
@@ -129,11 +143,13 @@ export function PosterModal({ open, onClose, group }: PosterModalProps) {
           >
             <X size={24} />
           </button>
-          <img
-            src={canvasRef.current?.toDataURL('image/png')}
-            alt={group.name}
-            className="max-h-[85vh] rounded-xl shadow-2xl"
-          />
+          {posterDataUrl && (
+            <img
+              src={posterDataUrl}
+              alt={group.name}
+              className="max-h-[85vh] rounded-xl shadow-2xl"
+            />
+          )}
           <div className="flex gap-3">
             <button
               onClick={handleDownload}
