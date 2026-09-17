@@ -146,11 +146,13 @@ export function GroupPage() {
       />
       <Navbar group={group} nickname={nickname} onNicknameChange={setNickname} />
 
-      <main className="relative mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6">
-        <Button size="sm" onClick={handleQuickCreate} className="rounded-full">
-          <Plus size={15} />
-          {t('createSlot.quickButton')}
-        </Button>
+            <main className="relative mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6">
+        <div className="flex justify-center">
+          <Button size="lg" onClick={handleQuickCreate} className="rounded-full">
+            <Plus size={18} />
+            {t('createSlot.quickButton')}
+          </Button>
+        </div>
 
         <GroupCalendar
           slots={slots}

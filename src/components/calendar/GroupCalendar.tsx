@@ -110,7 +110,10 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
   // Month view always uses short weekday labels ("lun"/"Mon"...) so the
   // header never wraps onto two lines, on phone or desktop, in either
   // language.
-  const monthViewOptions = { dayHeaderFormat: { weekday: 'short' as const } };
+    const monthViewOptions = {
+    dayHeaderFormat: { weekday: 'short' as const },
+    displayEventTime: false,
+  };
 
   return (
     <div className="rounded-2xl border border-court-700 bg-court-900 p-2.5 sm:p-5">

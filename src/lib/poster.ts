@@ -63,6 +63,22 @@ function fitText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number):
   return truncated + '…';
 }
 
+function wrapNameToLines(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+  if (ctx.measureText(text).width <= maxWidth) return [text];
+
+  const words = text.split(' ');
+  if (words.length === 1) return [fitText(ctx, text, maxWidth)];
+
+  let line1 = words[0];
+  let i = 1;
+  while (i < words.length && ctx.measureText(`${line1} ${words[i]}`).width <= maxWidth) {
+    line1 += ` ${words[i]}`;
+    i++;
+  }
+  const rest = words.slice(i).join(' ');
+  return rest ? [line1, fitText(ctx, rest, maxWidth)] : [line1];
+}
+
 /** Generated fallback used only if poster-bg.jpg fails to load. */
 function drawGeneratedBackground(ctx: CanvasRenderingContext2D) {
   const W = POSTER_WIDTH;
@@ -97,11 +113,15 @@ function drawGeneratedBackground(ctx: CanvasRenderingContext2D) {
 /** Draws the group name pill in the top-right, over whatever sits behind it
  * in the photo — always legible thanks to the translucent dark backing. */
 function drawNamePill(ctx: CanvasRenderingContext2D, groupName: string) {
-  const pillHeight = NAME_PILL.bottom - NAME_PILL.top;
+  const basePillHeight = NAME_PILL.bottom - NAME_PILL.top;
   ctx.font = '700 34px Unbounded, sans-serif';
-  const text = fitText(ctx, groupName.toUpperCase(), NAME_PILL.maxWidth - 48);
-  const textWidth = ctx.measureText(text).width;
+  const maxTextWidth = NAME_PILL.maxWidth - 48;
+  const lines = wrapNameToLines(ctx, groupName.toUpperCase(), maxTextWidth);
+
+  const lineHeight = 40;
+  const textWidth = Math.max(...lines.map((l) => ctx.measureText(l).width));
   const pillWidth = Math.min(NAME_PILL.maxWidth, textWidth + 56);
+  const pillHeight = lines.length === 1 ? basePillHeight : lines.length * lineHeight + 48;
   const pillX = POSTER_WIDTH - NAME_PILL.right - pillWidth;
 
   ctx.save();
@@ -120,7 +140,10 @@ function drawNamePill(ctx: CanvasRenderingContext2D, groupName: string) {
   ctx.fillStyle = '#eef5f4';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
-  ctx.fillText(text, pillX + 28, NAME_PILL.top + pillHeight / 2 + 2);
+  const startY = NAME_PILL.top + pillHeight / 2 - ((lines.length - 1) * lineHeight) / 2;
+  lines.forEach((line, i) => {
+    ctx.fillText(line, pillX + 28, startY + i * lineHeight + 2);
+  });
 }
 
 async function drawQrBlock(ctx: CanvasRenderingContext2D, inviteUrl: string, logoSrc: string) {
