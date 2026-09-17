@@ -41,39 +41,40 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
     { key: 'timeGridWeek', label: t('calendar.week') },
     { key: 'timeGridDay', label: t('calendar.day') },
   ];
-
-  const events = useMemo(
+ 
+    const events = useMemo(
     () =>
       slots.map((slot) => {
         const count = slot.participants.length;
         const status = getSlotStatus(count);
 
-        // How far into its status range this slot is (0 = just entered the
-        // status, 1 = about to tip into the next one). Only `low` currently
-        // spans more than one value (1 or 2 players), so today this is the
-        // only status where two overlapping slots end up visually distinct
-        // — a 2/4 slot renders a touch lighter than a 1/4 one, both still
-        // unmistakably blue.
         const { min, max } = SLOT_STATUS_RANGE[status];
         const span = max - min;
         const progress = span === 0 ? 0 : (count - min) / span;
         const fillColor = lighten(SLOT_STATUS_HEX[status], progress * 0.28);
 
+        // Month-view cells are narrow, especially on phone, so a full
+        // "3/4 · Marc, Julie, Sam" string wraps or gets clipped. The count
+        // alone is enough to scan the month at a glance; the full roster is
+        // still one tap away in SlotDetailsModal. Week/day cells have much
+        // more room, so names stay there.
+        const title =
+          activeView === 'dayGridMonth'
+            ? `${count}/4`
+            : `${count}/4 · ${slot.participants.map((p) => p.name).join(', ')}`;
+
         return {
           id: slot.id,
-          title: `${count}/4 · ${slot.participants.map((p) => p.name).join(', ')}`,
+          title,
           start: slot.start.toDate(),
           end: slot.end.toDate(),
           backgroundColor: fillColor,
-          // Border stays the pure status color regardless of count, so the
-          // status family (blue/orange/green) is still instantly readable
-          // even where the fill has been lightened.
           borderColor: SLOT_STATUS_HEX[status],
           textColor: status === 'empty' ? '#eef5f4' : '#071a1a',
           extendedProps: { slot },
         };
       }),
-    [slots]
+    [slots, activeView]
   );
 
   const handleSelect = (arg: DateSelectArg) => {

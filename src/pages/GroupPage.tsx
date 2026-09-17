@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
+import { Button } from '../components/ui/Button';
 import { useGroup } from '../contexts/GroupContext';
 import { useSlots } from '../hooks/useSlots';
 import { useLocalIdentity } from '../hooks/useLocalIdentity';
@@ -33,7 +34,7 @@ export function GroupPage() {
   const navigate = useNavigate();
   const { group, loading, error, loadGroup } = useGroup();
   const { nickname, setNickname, setLastGroupCode } = useLocalIdentity();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useAuth();
   const { addRecent } = useRecentGroups();
   const { slots } = useSlots(group?.id ?? null);
@@ -42,6 +43,7 @@ export function GroupPage() {
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
   const [dateFilter, setDateFilter] = useState('');
+  const [confirmation, setConfirmation] = useState<string | null>(null);
 
   useEffect(() => {
     if (code && (!group || group.inviteCode !== code)) loadGroup(code);
@@ -103,11 +105,28 @@ export function GroupPage() {
     );
   }
 
-  const handleCreateSlot = async (nick: string, start: Date, end: Date, club: string) => {
+    const handleCreateSlot = async (nick: string, start: Date, end: Date, club: string) => {
     await createSlot(group.id, start, end, nick, club, user?.uid);
     if (nick.trim() && nick.trim() !== nickname) setNickname(nick.trim());
     await touchGroupMemberCount(group.id).catch(() => {});
     trackEvent('add_availability', { group_code: group.inviteCode, ...eventDateParams(start) });
+
+    const dateLocale = language === 'en' ? 'en-GB' : 'fr-FR';
+    const day = start.toLocaleDateString(dateLocale, { weekday: 'long' });
+    const fmt = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    setConfirmation(`${day.charAt(0).toUpperCase() + day.slice(1)} · ${fmt(start)} → ${fmt(end)}`);
+    window.setTimeout(() => setConfirmation(null), 3500);
+  };
+
+  // Same 19:00 / +1h30 default as GroupCalendar's month-view tap-to-create
+  // (handleDateClick), so the button and the day-click path never diverge.
+
+  const handleQuickCreate = () => {
+    const start = new Date();
+    start.setHours(19, 0, 0, 0);
+    const end = new Date(start);
+    end.setHours(start.getHours() + 1, start.getMinutes() + 30);
+    setRange({ start, end });
   };
 
   const handleJoin = async (slot: Slot, nick: string, club: string) => {
@@ -175,6 +194,11 @@ export function GroupPage() {
         <Dashboard slots={slots} memberCount={group.memberCount} />
 
         <div className="flex flex-wrap items-center gap-2">
+          <Button size="sm" onClick={handleQuickCreate} className="rounded-full">
+            <Plus size={15} />
+            {t('createSlot.quickButton')}
+          </Button>
+
           {(Object.keys(FILTER_KEY) as Filter[]).map((value) => (
             <button
               key={value}
@@ -222,7 +246,7 @@ export function GroupPage() {
         onCreate={handleCreateSlot}
       />
 
-      <SlotDetailsModal
+            <SlotDetailsModal
         slot={selectedSlot}
         onClose={() => setSelectedSlot(null)}
         defaultNickname={nickname}
@@ -230,6 +254,15 @@ export function GroupPage() {
         onLeave={handleLeave}
         onDelete={handleDelete}
       />
+
+      {confirmation && (
+        <div className="pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center px-4">
+          <div className="pointer-events-auto animate-fade-up rounded-full border border-ball/40 bg-court-900 px-4 py-2.5 text-sm text-mist-100 shadow-[0_12px_30px_-8px_rgba(7,26,26,0.7)]">
+            <span className="font-semibold text-ball">{t('createSlot.confirmed')}</span>
+            <span className="text-mist-300"> · {confirmation}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

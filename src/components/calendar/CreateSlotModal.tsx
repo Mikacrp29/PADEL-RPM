@@ -16,6 +16,22 @@ function toTimeInput(d: Date) {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 
+// Adds `minutes` to a "HH:MM" string, wrapping past midnight just in case —
+// used only to compute a suggested end time, never stored directly.
+function addMinutesToTime(time: string, minutes: number) {
+  const [h, m] = time.split(':').map(Number);
+  const total = ((h * 60 + m + minutes) % (24 * 60) + 24 * 60) % (24 * 60);
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+}
+
+function diffMinutes(start: string, end: string) {
+  const [sh, sm] = start.split(':').map(Number);
+  const [eh, em] = end.split(':').map(Number);
+  return eh * 60 + em - (sh * 60 + sm);
+}
+
+const QUICK_DURATIONS = [90, 120] as const;
+
 export function CreateSlotModal({
   open,
   onClose,
@@ -105,6 +121,26 @@ export function CreateSlotModal({
             <label className="mb-1.5 block text-sm text-mist-300">{t('createSlot.endTime')}</label>
             <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
           </div>
+        </div>
+
+        <div className="flex gap-2">
+          {QUICK_DURATIONS.map((minutes) => {
+            const active = diffMinutes(startTime, endTime) === minutes;
+            return (
+              <button
+                key={minutes}
+                type="button"
+                onClick={() => setEndTime(addMinutesToTime(startTime, minutes))}
+                className={`flex-1 rounded-lg py-1.5 text-sm font-medium transition-colors ${
+                  active
+                    ? 'bg-ball text-court-950 font-semibold'
+                    : 'bg-court-800 text-mist-300 hover:text-mist-100'
+                }`}
+              >
+                {minutes === 90 ? '1h30' : '2h'}
+              </button>
+            );
+          })}
         </div>
 
         <div>

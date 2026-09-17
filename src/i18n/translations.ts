@@ -88,6 +88,8 @@ export const translations = {
     'createSlot.errorFailed': 'Impossible de créer le créneau. Réessaie.',
     'createSlot.creating': 'Création…',
     'createSlot.submit': 'Créer le créneau',
+    'createSlot.quickButton': '+ Je propose un créneau',
+    'createSlot.confirmed': 'Disponibilité ajoutée',
 
     // SlotDetailsModal
     'slotDetails.title': 'Détails du créneau',
@@ -262,6 +264,8 @@ export const translations = {
     'createSlot.errorFailed': 'Could not create the slot. Try again.',
     'createSlot.creating': 'Creating…',
     'createSlot.submit': 'Create slot',
+    'createSlot.quickButton': '+ Add a time slot',
+    'createSlot.confirmed': 'Availability added',
 
     // SlotDetailsModal
     'slotDetails.title': 'Slot details',

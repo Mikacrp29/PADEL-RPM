@@ -72,17 +72,37 @@ export function Dashboard({ slots, memberCount }: DashboardProps) {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      {cards.map(({ icon: Icon, label, value }) => (
-        <div
-          key={label}
-          className="rounded-2xl border border-court-700 bg-court-900 p-4 transition-colors hover:border-court-600"
-        >
-          <Icon size={18} className="mb-3 text-ball" />
-          <p className="font-display text-xl font-semibold text-mist-100">{value}</p>
-          <p className="text-xs text-mist-500">{label}</p>
-        </div>
-      ))}
-    </div>
+    <>
+      {/* Mobile: a single slim row instead of four bulky cards, so the
+          calendar — the actual point of this page — starts higher up. */}
+      <div className="flex items-center justify-between rounded-xl border border-court-700 bg-court-900 px-3 py-2.5 sm:hidden">
+        {cards.map(({ icon: Icon, label, value }, i) => (
+          <div
+            key={label}
+            className={`flex flex-1 items-center gap-2 ${i > 0 ? 'border-l border-court-700 pl-2' : ''}`}
+          >
+            <Icon size={15} className="shrink-0 text-ball" />
+            <div className="min-w-0 leading-tight">
+              <p className="font-display text-sm font-semibold text-mist-100">{value}</p>
+              <p className="truncate text-[10px] text-mist-500">{label}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop / tablet: unchanged card grid. */}
+      <div className="hidden grid-cols-2 gap-3 sm:grid sm:grid-cols-4">
+        {cards.map(({ icon: Icon, label, value }) => (
+          <div
+            key={label}
+            className="rounded-2xl border border-court-700 bg-court-900 p-4 transition-colors hover:border-court-600"
+          >
+            <Icon size={18} className="mb-3 text-ball" />
+            <p className="font-display text-xl font-semibold text-mist-100">{value}</p>
+            <p className="text-xs text-mist-500">{label}</p>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
