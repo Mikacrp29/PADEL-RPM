@@ -172,7 +172,7 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
               </div>
               {showHint && (
                 <div className="flex flex-1 items-center justify-center">
-                  <span className="text-3xl font-bold text-ball">+</span>
+                    <span className="text-3xl font-bold text-ball/50">+</span>
                 </div>
               )}
             </div>
