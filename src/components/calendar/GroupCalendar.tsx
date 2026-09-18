@@ -77,6 +77,16 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
     [slots, activeView]
   );
 
+    // Used to show a subtle '+' hint on days that have no slot yet.
+  const datesWithSlots = useMemo(() => {
+    const set = new Set<string>();
+    slots.forEach((slot) => {
+      const d = slot.start.toDate();
+      set.add(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`);
+    });
+    return set;
+  }, [slots]);
+
   const handleSelect = (arg: DateSelectArg) => {
     onSelectRange(arg.start, arg.end);
     arg.view.calendar.unselect();
@@ -152,6 +162,30 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
         dateClick={handleDateClick}
         eventClick={handleEventClick}
         events={events}
+        dayCellContent={(arg) => {
+          const key = `${arg.date.getFullYear()}-${arg.date.getMonth()}-${arg.date.getDate()}`;
+          const showHint = !arg.isOther && !datesWithSlots.has(key);
+          return (
+            <div className="flex w-full items-center justify-between px-0.5">
+              <span>{arg.dayNumberText}</span>
+              {showHint && <span className="pr-0.5 text-sm font-semibold text-ball/40">+</span>}
+            </div>
+          );
+        }}
+        eventContent={(arg) => {
+          const slot = arg.event.extendedProps.slot as Slot;
+          const full = slot.participants.length >= 4;
+          return (
+            <div className="flex items-center justify-center gap-1 overflow-hidden px-0.5">
+              <span className="truncate">{arg.event.title}</span>
+              {!full && (
+                <span className="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-ball text-[9px] font-bold leading-none text-court-950">
+                  +
+                </span>
+              )}
+            </div>
+          );
+        }}
         slotMinTime="07:00:00"
         slotMaxTime="23:00:00"
         slotDuration="00:30:00"
