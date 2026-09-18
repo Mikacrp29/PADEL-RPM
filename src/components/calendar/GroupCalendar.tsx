@@ -172,14 +172,14 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
             </div>
           );
         }}
-        eventContent={(arg) => {
+               eventContent={(arg) => {
           const slot = arg.event.extendedProps.slot as Slot;
           const full = slot.participants.length >= 4;
           return (
-            <div className="flex items-center justify-center gap-1 overflow-hidden px-0.5">
+            <div className="relative flex h-full w-full items-center justify-center overflow-hidden px-0.5">
               <span className="truncate">{arg.event.title}</span>
               {!full && (
-                <span className="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-ball text-[9px] font-bold leading-none text-court-950">
+                <span className="pointer-events-none absolute right-0 top-0 text-[9px] font-bold leading-none text-court-950/70">
                   +
                 </span>
               )}
