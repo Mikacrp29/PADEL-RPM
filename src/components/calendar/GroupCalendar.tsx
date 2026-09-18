@@ -162,20 +162,20 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
         dateClick={handleDateClick}
         eventClick={handleEventClick}
         events={events}
-                dayCellContent={(arg) => {
+                        dayCellContent={(arg) => {
           const key = `${arg.date.getFullYear()}-${arg.date.getMonth()}-${arg.date.getDate()}`;
           const showHint = !arg.isOther && !datesWithSlots.has(key);
           return (
-            <>
+            <div className="flex min-h-[64px] w-full flex-col">
               <div className="flex w-full items-center justify-between px-0.5">
                 <span>{arg.dayNumberText}</span>
               </div>
               {showHint && (
-                <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-3xl font-bold text-ball/30">
-                  +
-                </span>
+                <div className="flex flex-1 items-center justify-center">
+                  <span className="text-3xl font-bold text-ball">+</span>
+                </div>
               )}
-            </>
+            </div>
           );
         }}
                eventContent={(arg) => {
