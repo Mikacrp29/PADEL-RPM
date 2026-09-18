@@ -16,8 +16,10 @@ function toTimeInput(d: Date) {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 
-// Adds `minutes` to a "HH:MM" string, wrapping past midnight just in case —
-// used only to compute a suggested end time, never stored directly.
+function toDateInput(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 function addMinutesToTime(time: string, minutes: number) {
   const [h, m] = time.split(':').map(Number);
   const total = ((h * 60 + m + minutes) % (24 * 60) + 24 * 60) % (24 * 60);
@@ -42,6 +44,7 @@ export function CreateSlotModal({
   const { t, language } = useLanguage();
   const [nickname, setNickname] = useState(defaultNickname);
   const [club, setClub] = useState('');
+  const [dateValue, setDateValue] = useState('');
   const [startTime, setStartTime] = useState('19:00');
   const [endTime, setEndTime] = useState('20:30');
   const [submitting, setSubmitting] = useState(false);
@@ -49,6 +52,7 @@ export function CreateSlotModal({
 
   useEffect(() => {
     if (range) {
+      setDateValue(toDateInput(range.start));
       setStartTime(toTimeInput(range.start));
       setEndTime(toTimeInput(range.end));
     }
@@ -64,12 +68,11 @@ export function CreateSlotModal({
       setError(t('createSlot.errorNoNickname'));
       return;
     }
+    const [y, m, d] = dateValue.split('-').map(Number);
     const [sh, sm] = startTime.split(':').map(Number);
     const [eh, em] = endTime.split(':').map(Number);
-    const start = new Date(range.start);
-    start.setHours(sh, sm, 0, 0);
-    const end = new Date(range.start);
-    end.setHours(eh, em, 0, 0);
+    const start = new Date(y, m - 1, d, sh, sm, 0, 0);
+    const end = new Date(y, m - 1, d, eh, em, 0, 0);
 
     if (end <= start) {
       setError(t('createSlot.errorTimeOrder'));
@@ -89,15 +92,23 @@ export function CreateSlotModal({
   };
 
   const dateLocale = language === 'en' ? 'en-GB' : 'fr-FR';
-  const dateLabel = range.start.toLocaleDateString(dateLocale, {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-  });
+  const [dy, dm, dd] = dateValue.split('-').map(Number);
+  const dateLabel = dateValue
+    ? new Date(dy, dm - 1, dd).toLocaleDateString(dateLocale, { weekday: 'long' })
+    : '';
 
   return (
     <Modal open={open} onClose={onClose} title={t('createSlot.title')}>
-      <p className="mb-4 text-sm capitalize text-mist-300">{dateLabel}</p>
+      <div className="mb-4">
+        <label className="mb-1.5 block text-sm text-mist-300">{t('createSlot.date')}</label>
+        <Input
+          type="date"
+          value={dateValue}
+          onChange={(e) => setDateValue(e.target.value)}
+          className="[color-scheme:dark]"
+        />
+        {dateLabel && <p className="mt-1.5 text-sm capitalize text-mist-500">{dateLabel}</p>}
+      </div>
 
       <div className="space-y-4">
         <div>
