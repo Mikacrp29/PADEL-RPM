@@ -12,7 +12,8 @@ service cloud.firestore {
     }
 
     match /groups/{groupId} {
-      allow read: if true;
+      allow get: if true;
+      allow list: if false;
       allow create: if isValidGroup(request.resource.data);
       allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberCount', 'bookingUrl']);
       allow delete: if false;
@@ -23,6 +24,18 @@ service cloud.firestore {
         allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) && request.resource.data.participants.size() <= 4;
         allow delete: if resource.data.participants.size() == 0;
       }
+    }
+
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.uid == userId
+        && request.resource.data.nickname is string
+        && request.resource.data.notifyByEmail is bool
+        && request.resource.data.notifyByPush is bool;
+      allow update: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.uid == resource.data.uid;
+      allow delete: if false;
     }
   }
 }
