@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Plus } from 'lucide-react';
 import type { Slot } from '../../types';
 import { getSlotStatus, SLOT_STATUS_HEX } from '../../types';
 import { PadelIcon } from '../ui/PadelIcon';
@@ -7,6 +7,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 interface DaySlotListProps {
   slots: Slot[];
   onSelectSlot: (slot: Slot) => void;
+  onCreateDefault: () => void;
 }
 
 function toTime(d: Date) {
@@ -89,13 +90,19 @@ function SlotCard({ slot, onSelect }: { slot: Slot; onSelect: () => void }) {
   );
 }
 
-export function DaySlotList({ slots, onSelectSlot }: DaySlotListProps) {
+export function DaySlotList({ slots, onSelectSlot, onCreateDefault }: DaySlotListProps) {
   const { t } = useLanguage();
   const sorted = [...slots].sort((a, b) => a.start.toMillis() - b.start.toMillis());
 
   if (sorted.length === 0) {
     return (
-      <p className="py-10 text-center text-sm text-mist-500">{t('calendar.noSlotsThisDay')}</p>
+      <button
+        onClick={onCreateDefault}
+        className="flex w-full flex-col items-center justify-center gap-1.5 rounded-2xl border border-dashed border-court-600 py-8 text-mist-500 transition-colors hover:border-ball/50 hover:text-ball"
+      >
+        <Plus size={22} />
+        <span className="text-sm">{t('calendar.noSlotsThisDay')}</span>
+      </button>
     );
   }
 

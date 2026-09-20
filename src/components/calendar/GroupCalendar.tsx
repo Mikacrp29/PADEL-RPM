@@ -35,12 +35,21 @@ interface GroupCalendarProps {
 export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalendarProps) {
   const calendarRef = useRef<FullCalendar>(null);
   const isMobile = useIsMobile();
-  const [activeView, setActiveView] = useState<ViewKey>('dayGridMonth');
-  const [selectedDay, setSelectedDay] = useState(() => {
+  const [activeView, setActiveView] = useState<ViewKey>('timeGridDay');
+  function startOfWeek(d: Date) {
+    const date = new Date(d);
+    const day = (date.getDay() + 6) % 7;
+    date.setDate(date.getDate() - day);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+  const todayMidnight = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
     return d;
-  });
+  }, []);
+  const [selectedDay, setSelectedDay] = useState(todayMidnight);
+  const [weekStart, setWeekStart] = useState(() => startOfWeek(todayMidnight));
   const { t, language } = useLanguage();
 
   const viewOptions: { key: ViewKey; label: string }[] = [
@@ -112,19 +121,45 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
     calendarRef.current?.getApi().changeView(view);
   };
 
-  const shiftDay = (delta: number) => {
+  const shiftMonth = (delta: number) => {
     setSelectedDay((prev) => {
       const next = new Date(prev);
-      next.setDate(next.getDate() + delta);
+      next.setMonth(next.getMonth() + delta);
+      setWeekStart(startOfWeek(next));
       return next;
     });
   };
 
-  const goToToday = () => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    setSelectedDay(d);
+  const shiftWeek = (delta: number) => {
+    setWeekStart((prev) => {
+      const next = new Date(prev);
+      next.setDate(next.getDate() + delta * 7);
+      setSelectedDay((prevSelected) => {
+        const shifted = new Date(prevSelected);
+        shifted.setDate(shifted.getDate() + delta * 7);
+        return shifted;
+      });
+      return next;
+    });
   };
+
+  const visibleDays = useMemo(
+    () =>
+      Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(weekStart);
+        d.setDate(d.getDate() + i);
+        return d;
+      }),
+    [weekStart]
+  );
+
+  const isSameDay = (a: Date, b: Date) =>
+    a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
+  const monthLabel = selectedDay.toLocaleDateString(language === 'en' ? 'en-GB' : 'fr-FR', {
+    month: 'long',
+    year: 'numeric',
+  });
 
   const slotsForSelectedDay = useMemo(
     () =>
@@ -138,12 +173,6 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
       }),
     [slots, selectedDay]
   );
-
-  const selectedDayLabel = selectedDay.toLocaleDateString(language === 'en' ? 'en-GB' : 'fr-FR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-  });
 
   const monthViewOptions = {
     dayHeaderFormat: { weekday: 'short' as const },
@@ -231,29 +260,86 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
 
       {activeView === 'timeGridDay' && (
         <div>
-          <div className="mb-3 flex items-center justify-between gap-2">
+          <div className="mb-2 flex items-center justify-between gap-2">
             <button
-              onClick={() => shiftDay(-1)}
+              onClick={() => shiftMonth(-1)}
               aria-label={t('calendar.previousDay')}
               className="rounded-lg p-1.5 text-mist-300 hover:bg-court-800 hover:text-mist-100"
             >
               <ChevronLeft size={18} />
             </button>
+            <span className="font-display text-sm font-semibold capitalize text-mist-100">
+              {monthLabel}
+            </span>
             <button
-              onClick={goToToday}
-              className="min-w-0 flex-1 truncate rounded-lg px-2 py-1 text-center font-display text-sm font-semibold capitalize text-mist-100 hover:bg-court-800"
-            >
-              {selectedDayLabel}
-            </button>
-            <button
-              onClick={() => shiftDay(1)}
+              onClick={() => shiftMonth(1)}
               aria-label={t('calendar.nextDay')}
               className="rounded-lg p-1.5 text-mist-300 hover:bg-court-800 hover:text-mist-100"
             >
               <ChevronRight size={18} />
             </button>
           </div>
-          <DaySlotList slots={slotsForSelectedDay} onSelectSlot={onSelectSlot} />
+
+          <div className="mb-4 flex items-center gap-1">
+            <button
+              onClick={() => shiftWeek(-1)}
+              aria-label={t('calendar.previousDay')}
+              className="shrink-0 rounded-lg p-1 text-mist-500 hover:bg-court-800 hover:text-mist-100"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <div className="flex flex-1 gap-1.5 overflow-x-auto">
+              {visibleDays.map((d) => {
+                const selected = isSameDay(d, selectedDay);
+                const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+                const hasSlots = datesWithSlots.has(key);
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedDay(d)}
+                    className={`flex min-w-[52px] shrink-0 flex-col items-center gap-1 rounded-xl border px-2 py-2 transition-colors ${
+                      selected
+                        ? 'border-ball bg-ball text-court-950'
+                        : 'border-court-700 bg-court-800 text-mist-100 hover:border-court-600'
+                    }`}
+                  >
+                    <span
+                      className={`text-[11px] capitalize ${selected ? 'text-court-950/70' : 'text-mist-500'}`}
+                    >
+                      {d.toLocaleDateString(language === 'en' ? 'en-GB' : 'fr-FR', {
+                        weekday: 'short',
+                      })}
+                    </span>
+                    <span className="text-base font-bold leading-none">{d.getDate()}</span>
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        hasSlots ? (selected ? 'bg-court-950' : 'bg-ball') : 'bg-transparent'
+                      }`}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              onClick={() => shiftWeek(1)}
+              aria-label={t('calendar.nextDay')}
+              className="shrink-0 rounded-lg p-1 text-mist-500 hover:bg-court-800 hover:text-mist-100"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+
+          <DaySlotList
+            slots={slotsForSelectedDay}
+            onSelectSlot={onSelectSlot}
+            onCreateDefault={() => {
+              const start = new Date(selectedDay);
+              start.setHours(19, 0, 0, 0);
+              const end = new Date(start);
+              end.setHours(20, 30, 0, 0);
+              onSelectRange(start, end);
+            }}
+          />
         </div>
       )}
     </div>
