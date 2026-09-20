@@ -174,6 +174,27 @@ export const translations = {
     // Tutorial
     'tutorial.title': 'Comment ça marche',
 
+        // Cookies / consent
+    'cookies.bannerTitle': 'Votre vie privée',
+    'cookies.bannerText':
+      'Padel Ensemble utilise des cookies strictement nécessaires au fonctionnement du service. Avec votre accord, nous aimerions aussi mesurer l’audience du site (Google Analytics).',
+    'cookies.refuse': 'Refuser',
+    'cookies.customize': 'Personnaliser',
+    'cookies.accept': 'Accepter',
+    'cookies.necessaryTitle': 'Nécessaires',
+    'cookies.necessaryDesc': 'Indispensables au fonctionnement du site (connexion, groupes). Toujours actifs.',
+    'cookies.analyticsTitle': 'Statistiques',
+    'cookies.analyticsDesc': 'Google Analytics 4 — nous aide à comprendre l’usage du site. Désactivé par défaut.',
+    'cookies.confirmChoices': 'Confirmer mes choix',
+    'cookies.close': 'Fermer',
+    'cookies.readMore': 'En savoir plus',
+    'cookies.manage': 'Gérer mes cookies',
+    'cookies.policyLink': 'Politique de cookies',
+    'cookies.policyTitle': 'Politique de cookies',
+    'cookies.policyPlaceholder':
+      '[Contenu provisoire — texte juridique définitif à valider] Cette page expliquera les cookies strictement nécessaires, Google Analytics 4, la finalité des statistiques, et comment modifier votre consentement à tout moment.',
+    'footer.rights': 'Tous droits réservés.',
+
     // Misc
     'lang.switchTo': 'EN',
     dateLocale: 'fr-FR',
@@ -350,6 +371,27 @@ export const translations = {
 
     // Tutorial
     'tutorial.title': 'How it works',
+
+        // Cookies / consent
+    'cookies.bannerTitle': 'Your privacy',
+    'cookies.bannerText':
+      'Padel Ensemble uses cookies strictly necessary for the site to work. With your consent, we’d also like to measure site usage (Google Analytics).',
+    'cookies.refuse': 'Refuse',
+    'cookies.customize': 'Customize',
+    'cookies.accept': 'Accept',
+    'cookies.necessaryTitle': 'Necessary',
+    'cookies.necessaryDesc': 'Required for the site to work (login, groups). Always active.',
+    'cookies.analyticsTitle': 'Statistics',
+    'cookies.analyticsDesc': 'Google Analytics 4 — helps us understand how the site is used. Off by default.',
+    'cookies.confirmChoices': 'Confirm my choices',
+    'cookies.close': 'Close',
+    'cookies.readMore': 'Learn more',
+    'cookies.manage': 'Manage cookies',
+    'cookies.policyLink': 'Cookie policy',
+    'cookies.policyTitle': 'Cookie policy',
+    'cookies.policyPlaceholder':
+      '[Placeholder content — final legal text pending approval] This page will explain strictly necessary cookies, Google Analytics 4, the purpose of the statistics, and how to change your consent at any time.',
+    'footer.rights': 'All rights reserved.',
 
     // Misc
     'lang.switchTo': 'FR',

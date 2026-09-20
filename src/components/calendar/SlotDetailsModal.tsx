@@ -6,7 +6,7 @@ import { Input } from '../ui/Input';
 import { StatusBadge } from '../ui/StatusBadge';
 import type { Slot } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { trackEvent, eventDateParams } from '../../lib/analytics';
+import { trackEvent } from '../../lib/analytics';
 import { BOOKING_SITES } from '../../lib/bookingSites';
 
 interface SlotDetailsModalProps {
@@ -78,10 +78,7 @@ export function SlotDetailsModal({
   };
 
   const handleBooking = (url: string) => {
-    trackEvent('book_court', {
-      group_code: slot.groupId,
-      ...eventDateParams(slot.start.toDate()),
-    });
+    trackEvent('book_court');
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 

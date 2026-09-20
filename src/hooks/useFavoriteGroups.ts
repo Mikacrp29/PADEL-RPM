@@ -92,7 +92,7 @@ export function useFavoriteGroups() {
           return next;
         });
       }
-      trackEvent('favorite_group', { group_code: code });
+      trackEvent('favorite_group');
     },
     [loggedIn, profile, setFavorites]
   );

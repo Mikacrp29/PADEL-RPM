@@ -23,7 +23,7 @@ export function JoinGroup() {
     const group = await loadGroup(value);
     if (group) {
       setLastGroupCode(group.inviteCode);
-      trackEvent('join_group', { group_code: group.inviteCode });
+      trackEvent('join_group');
       navigate(`/g/${group.inviteCode}`);
     }
   };

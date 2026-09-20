@@ -23,7 +23,7 @@ export function InviteModal({ open, onClose, group }: InviteModalProps) {
     await navigator.clipboard.writeText(value);
     setCopied(kind);
     setTimeout(() => setCopied(null), 1500);
-    trackEvent('share_group', { group_code: group.inviteCode, method: kind });
+    trackEvent('share_group', { method: kind });
   };
 
   return (

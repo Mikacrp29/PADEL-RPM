@@ -44,7 +44,7 @@ export async function createGroup(name: string, creatorName: string): Promise<Gr
   };
   await setDoc(groupRef, groupData);
 
-  trackEvent('create_group', { group_code: inviteCode, group_name: groupData.name });
+    trackEvent('create_group');
 
   return {
     id: inviteCode,

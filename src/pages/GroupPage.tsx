@@ -14,7 +14,7 @@ import { CreateSlotModal } from '../components/calendar/CreateSlotModal';
 import { SlotDetailsModal } from '../components/calendar/SlotDetailsModal';
 import { createSlot, joinSlot, leaveSlot, deleteSlot } from '../firebase/slots';
 import { touchGroupMemberCount } from '../firebase/groups';
-import { trackEvent, eventDateParams } from '../lib/analytics';
+import { trackEvent } from '../lib/analytics';
 import type { Slot } from '../types';
 
 export function GroupPage() {
@@ -77,7 +77,7 @@ export function GroupPage() {
     await createSlot(group.id, start, end, nick, club, user?.uid);
     if (nick.trim() && nick.trim() !== nickname) setNickname(nick.trim());
     await touchGroupMemberCount(group.id).catch(() => {});
-    trackEvent('add_availability', { group_code: group.inviteCode, ...eventDateParams(start) });
+    trackEvent('add_availability');
 
     const dateLocale = language === 'en' ? 'en-GB' : 'fr-FR';
     const day = start.toLocaleDateString(dateLocale, { weekday: 'long' });
@@ -102,17 +102,10 @@ export function GroupPage() {
     await joinSlot(group.id, slot.id, nick, club, user?.uid);
     setNickname(nick);
 
-    trackEvent('add_availability', {
-      group_code: group.inviteCode,
-      ...eventDateParams(slot.start.toDate()),
-    });
+    trackEvent('add_availability');
 
     if (wasThreeOfFour) {
-      trackEvent('match_ready', {
-        group_code: group.inviteCode,
-        ...eventDateParams(slot.start.toDate()),
-        player_count: 4,
-      });
+      trackEvent('match_ready', { player_count: 4 });
     }
   };
 
@@ -122,7 +115,7 @@ export function GroupPage() {
     );
     if (!participant) return;
     await leaveSlot(group.id, slot.id, participant);
-    trackEvent('remove_availability', { group_code: group.inviteCode });
+    trackEvent('remove_availability');
     if (slot.participants.length === 1) {
       await deleteSlot(group.id, slot.id);
     }
