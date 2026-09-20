@@ -153,8 +153,17 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
     [weekStart]
   );
 
-  const isSameDay = (a: Date, b: Date) =>
+    const isSameDay = (a: Date, b: Date) =>
     a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
+  const selectedDayRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    selectedDayRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center',
+      block: 'nearest',
+    });
+  }, [selectedDay, weekStart]);
 
   const monthLabel = selectedDay.toLocaleDateString(language === 'en' ? 'en-GB' : 'fr-FR', {
     month: 'long',
@@ -296,6 +305,7 @@ export function GroupCalendar({ slots, onSelectRange, onSelectSlot }: GroupCalen
                 return (
                   <button
                     key={key}
+                    ref={selected ? selectedDayRef : undefined}
                     onClick={() => setSelectedDay(d)}
                     className={`flex min-w-[52px] shrink-0 flex-col items-center gap-1 rounded-xl border px-2 py-2 transition-colors ${
                       selected
