@@ -73,6 +73,9 @@ export const translations = {
     'calendar.week': 'Semaine',
     'calendar.day': 'Jour',
     'calendar.today': "aujourd'hui",
+    'calendar.previousDay': 'Jour précédent',
+    'calendar.nextDay': 'Jour suivant',
+    'calendar.noSlotsThisDay': 'Aucun créneau ce jour-là.',
 
     // CreateSlotModal
     'createSlot.title': 'Nouveau créneau',
@@ -271,6 +274,9 @@ export const translations = {
     'calendar.week': 'Week',
     'calendar.day': 'Day',
     'calendar.today': 'today',
+    'calendar.previousDay': 'Previous day',
+    'calendar.nextDay': 'Next day',
+    'calendar.noSlotsThisDay': 'No slots on this day.',
 
     // CreateSlotModal
     'createSlot.title': 'New slot',
