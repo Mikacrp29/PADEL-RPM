@@ -48,12 +48,40 @@ export function Home() {
 
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-12 sm:py-16">
         <div className="w-full max-w-md text-center">
-          <img
-            src="/logo.webp"
-            alt="Padel Ensemble"
-            className="mx-auto mb-6 h-40 w-40 rounded-2xl sm:mb-8 sm:h-48 sm:w-48"
-            style={{ filter: 'drop-shadow(0 0 28px rgba(200,241,60,0.35))' }}
-          />
+                    <div
+            className="relative mx-auto mb-8 w-full overflow-hidden rounded-3xl border border-court-700 bg-court-900 sm:mb-10"
+            style={{ aspectRatio: '17 / 10' }}
+          >
+            <svg
+              className="absolute inset-0 h-full w-full"
+              viewBox="0 0 340 200"
+              preserveAspectRatio="none"
+              aria-hidden
+            >
+              <rect
+                x="30"
+                y="20"
+                width="280"
+                height="160"
+                fill="none"
+                stroke="#c8f13c"
+                strokeOpacity="0.35"
+                strokeWidth="1.5"
+              />
+              <line x1="170" y1="20" x2="170" y2="180" stroke="#c8f13c" strokeOpacity="0.3" strokeWidth="1.5" />
+              <line x1="90" y1="20" x2="90" y2="180" stroke="#c8f13c" strokeOpacity="0.2" strokeWidth="1" />
+              <line x1="250" y1="20" x2="250" y2="180" stroke="#c8f13c" strokeOpacity="0.2" strokeWidth="1" />
+              <line x1="90" y1="100" x2="250" y2="100" stroke="#c8f13c" strokeOpacity="0.2" strokeWidth="1" />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <img
+                src="/logo.webp"
+                alt="Padel Ensemble"
+                className="h-32 w-32 rounded-2xl sm:h-40 sm:w-40"
+                style={{ filter: 'drop-shadow(0 0 28px rgba(200,241,60,0.4))' }}
+              />
+            </div>
+          </div>
           <h1 className="sr-only">Padel Ensemble</h1>
           <p className="mb-10 text-mist-300">{t('home.subtitle')}</p>
 
