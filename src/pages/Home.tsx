@@ -51,12 +51,10 @@ export function Home() {
           <img
             src="/logo.webp"
             alt="Padel Ensemble"
-            className="mx-auto mb-6 h-20 w-20 rounded-2xl sm:mb-8 sm:h-24 sm:w-24"
+            className="mx-auto mb-6 h-40 w-40 rounded-2xl sm:mb-8 sm:h-48 sm:w-48"
             style={{ filter: 'drop-shadow(0 0 28px rgba(200,241,60,0.35))' }}
           />
-          <h1 className="mb-3 font-display text-4xl font-bold leading-tight text-mist-100 sm:text-5xl">
-            Padel <span className="text-ball">Ensemble</span>
-          </h1>
+          <h1 className="sr-only">Padel Ensemble</h1>
           <p className="mb-10 text-mist-300">{t('home.subtitle')}</p>
 
           <div className="flex flex-col gap-3 sm:flex-row">
