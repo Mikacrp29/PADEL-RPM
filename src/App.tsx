@@ -7,6 +7,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ConsentProvider } from './contexts/ConsentContext';
 import { Footer } from './components/layout/Footer';
 import { CookieBanner } from './components/layout/CookieBanner';
+import { SplashScreen } from './components/layout/SplashScreen';
 
 import { Home } from './pages/Home';
 
@@ -53,6 +54,7 @@ function App() {
         <BrowserRouter>
           <GroupProvider>
             <ConsentProvider>
+              <SplashScreen />
               <div className="flex min-h-screen flex-col">
                 <Suspense fallback={null}>
                   <Routes>

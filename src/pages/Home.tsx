@@ -46,8 +46,14 @@ export function Home() {
         <LanguageToggle />
       </div>
 
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-10">
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-12 sm:py-16">
         <div className="w-full max-w-md text-center">
+          <img
+            src="/logo.webp"
+            alt="Padel Ensemble"
+            className="mx-auto mb-6 h-20 w-20 rounded-2xl sm:mb-8 sm:h-24 sm:w-24"
+            style={{ filter: 'drop-shadow(0 0 28px rgba(200,241,60,0.35))' }}
+          />
           <h1 className="mb-3 font-display text-4xl font-bold leading-tight text-mist-100 sm:text-5xl">
             Padel <span className="text-ball">Ensemble</span>
           </h1>
