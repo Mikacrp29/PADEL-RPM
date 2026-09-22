@@ -83,7 +83,9 @@ export function Home() {
             </div>
           </div>
           <h1 className="sr-only">Padel Ensemble</h1>
-          <p className="mb-10 text-mist-300">{t('home.subtitle')}</p>
+          <p className="mx-auto mb-10 max-w-[19rem] text-base leading-relaxed text-mist-200 sm:max-w-xs sm:text-lg">
+            {t('home.subtitle')}
+          </p>
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button size="lg" className="flex-1" onClick={() => navigate('/create')}>
@@ -98,14 +100,6 @@ export function Home() {
               {t('home.joinGroup')}
             </Button>
           </div>
-
-          <button
-            onClick={() => navigate('/tutoriel')}
-            className="mx-auto mt-4 flex items-center gap-1.5 text-sm text-mist-400 underline decoration-dotted underline-offset-4 transition-colors hover:text-ball"
-          >
-            <ImageIcon size={14} />
-            {t('home.viewTutorial')}
-          </button>
 
           <div className="mt-10 text-left">
             {groups.length === 0 ? (
@@ -176,7 +170,15 @@ export function Home() {
             </div>
           )}
 
-          <SocialLinks className="mt-10" />
+                    <SocialLinks className="mt-10" />
+
+          <button
+            onClick={() => navigate('/tutoriel')}
+            className="mx-auto mt-6 flex items-center gap-1.5 text-sm text-mist-400 underline decoration-dotted underline-offset-4 transition-colors hover:text-ball"
+          >
+            <ImageIcon size={14} />
+            {t('home.viewTutorial')}
+          </button>
         </div>
       </div>
     </div>
