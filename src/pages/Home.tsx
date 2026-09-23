@@ -87,6 +87,8 @@ export function Home() {
             {t('home.subtitle')}
           </p>
 
+                   <h1 className="sr-only">Padel Ensemble</h1>
+
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button size="lg" className="flex-1" onClick={() => navigate('/create')}>
               {t('home.createGroup')}
@@ -100,6 +102,10 @@ export function Home() {
               {t('home.joinGroup')}
             </Button>
           </div>
+
+          <p className="mx-auto mb-4 mt-6 max-w-[19rem] text-base leading-relaxed text-mist-200 sm:max-w-xs sm:text-lg">
+            {t('home.subtitle')}
+          </p>
 
           <div className="mt-10 rounded-2xl border border-court-700 bg-court-900 p-4 text-left">
             {groups.length === 0 ? (
