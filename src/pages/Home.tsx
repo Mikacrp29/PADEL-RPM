@@ -101,9 +101,9 @@ export function Home() {
             </Button>
           </div>
 
-          <div className="mt-10 text-left">
+          <div className="mt-10 rounded-2xl border border-court-700 bg-court-900 p-4 text-left">
             {groups.length === 0 ? (
-                            <div className="flex flex-col items-center gap-3 py-2 text-mist-500">
+              <div className="flex flex-col items-center gap-3 py-2 text-mist-500">
                 <PadelIcon size={36} className="text-court-600" />
                 <p className="text-center text-sm">{t('home.noFavorites')}</p>
               </div>
