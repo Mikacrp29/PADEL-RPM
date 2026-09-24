@@ -83,9 +83,6 @@ export function Home() {
             </div>
           </div>
           <h1 className="sr-only">Padel Ensemble</h1>
-          <p className="mx-auto mb-10 max-w-[19rem] text-base leading-relaxed text-mist-200 sm:max-w-xs sm:text-lg">
-            {t('home.subtitle')}
-          </p>
 
                    <h1 className="sr-only">Padel Ensemble</h1>
 
